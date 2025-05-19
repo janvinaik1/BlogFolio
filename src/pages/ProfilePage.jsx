@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
   const [userId, setUserId] = useState(null);
   const [username, setUsername] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      const user = JSON.parse(storedUser); 
+      const user = JSON.parse(storedUser);
       setUserId(user.id);
       setUsername(user.username);
     }
@@ -15,13 +17,50 @@ const ProfilePage = () => {
 
   const shareableLink = `${window.location.origin}/public/home?authorId=${userId}`;
 
-  if (!userId || !username) return <p>Loading...</p>;
+  if (!userId || !username) return <p className="p-6 text-lg">Loading...</p>;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Welcome, {username}</h1>
-      <p>Share your blogs: <a href={shareableLink} className="text-blue-500 underline">{shareableLink}</a></p>
+    <div className="max-w-3xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-4">Welcome, {username}!</h1>
+
+      <div className="mb-6">
+        <p className="text-lg">
+          🔗 Share your portfolio and blogs:
+        </p>
+        <a
+          href={shareableLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 underline break-all"
+        >
+          {shareableLink}
+        </a>
+      </div>
+
+      <div className="space-y-4">
+        <button
+          onClick={() => navigate("/blog/createportfolio")}
+          className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded"
+        >
+          ✨ Create Portfolio
+        </button>
+
+        <button
+          onClick={() => navigate("/customize")}
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded"
+        >
+          🎨 Customize Portfolio Theme
+        </button>
+
+        <button
+          onClick={() => navigate("/blog/create")}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
+        >
+          📝 Create Blog
+        </button>
+      </div>
     </div>
   );
 };
+
 export default ProfilePage;

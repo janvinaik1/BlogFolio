@@ -9,16 +9,18 @@ import CreateBlog from "./pages/CreateBlog";
 import BlogDetailPage from "./pages/BlogDetail";
 import ProfilePage from "./pages/ProfilePage";
 import EditBlogPage from "./pages/EditBlogPage";
-
+import CreatePortfolio from "./pages/CreatePortfolio";
+import PortfolioPage from "./pages/PortfolioPage";
 const App = () => {
   return (
     <Routes>
       <Route path="/blog" element={<MainLayout />}>
-        <Route path="create" element={<CreateBlog />} />
+        <Route path="createblog" element={<CreateBlog />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path=":id" element={<BlogDetailPage />} />
         <Route path="home" element={<HomePage />} />
         <Route path="edit/:id" element={<EditBlogPage />} />
+        <Route path="createportfolio" element={<CreatePortfolio />} />
       </Route>
       <Route path="/public" element={<PublicLayout />}>
         <Route path=":id" element={<BlogDetailPage />} />
@@ -27,7 +29,7 @@ const App = () => {
 
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-
+      <Route path="/portfolio/:id" element={<PortfolioPage />} />
       {/* <Route path="*" element={<NotFound />} /> */}
     </Routes>
   );

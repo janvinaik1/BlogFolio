@@ -9,7 +9,6 @@ const HomePage = () => {
 
   const queryParams = new URLSearchParams(location.search);
   const authorId = queryParams.get("authorId");
-  console.log(authorId);
   const initialSearch = queryParams.get("search") || "";
   const tag = queryParams.get("tag") || "";
 
@@ -39,7 +38,7 @@ const HomePage = () => {
     } catch (err) {
       console.error("Failed to fetch blogs:", err);
     }
-  };
+  };+
 
   useEffect(() => {
     fetchBlogs();

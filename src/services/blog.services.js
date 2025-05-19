@@ -28,7 +28,6 @@ const blogService = {
 
   createBlog: async (blogData,token) => {
     try {
-      console.log(token);
       const response = await axiosInstance.post("/blog/create", blogData,{
        headers: {
         Authorization: `Bearer ${token}`,
