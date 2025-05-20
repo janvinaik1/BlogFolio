@@ -37,7 +37,7 @@ const Navbar = () => {
         {user ? (
           <>
            <Link
-              to={`/portfolio/${userId}`}
+              to={`/blog/portfolio/${userId}`}
               className="hover:text-indigo-400 transition duration-300"
             >
               Portfolio

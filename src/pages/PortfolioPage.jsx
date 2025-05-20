@@ -143,10 +143,6 @@ const PortfolioDisplay = () => {
               <h2 className="text-4xl lg:text-6xl font-bold text-gray-400 mb-6">
                 {portfolio.title}
               </h2>
-              <p className="text-gray-300 text-lg leading-relaxed max-w-2xl mb-8">
-                {portfolio.bio}
-              </p>
-
               <div className="flex space-x-4">
                 {portfolio.socialLinks.map((social, index) => (
                   <a

@@ -15,7 +15,7 @@ const ProfilePage = () => {
     }
   }, []);
 
-  const shareableLink = `${window.location.origin}/public/home?authorId=${userId}`;
+  const shareableLink = `${window.location.origin}/public/portfolio/${userId}`;
 
   if (!userId || !username) return <p className="p-6 text-lg">Loading...</p>;
 

@@ -11,6 +11,8 @@ import ProfilePage from "./pages/ProfilePage";
 import EditBlogPage from "./pages/EditBlogPage";
 import CreatePortfolio from "./pages/CreatePortfolio";
 import PortfolioPage from "./pages/PortfolioPage";
+import ForgotPasswordPage from "./pages/ForgotPassword";
+import ResetPasswordPage from "./pages/ResetPassword";
 const App = () => {
   return (
     <Routes>
@@ -21,15 +23,19 @@ const App = () => {
         <Route path="home" element={<HomePage />} />
         <Route path="edit/:id" element={<EditBlogPage />} />
         <Route path="createportfolio" element={<CreatePortfolio />} />
+         <Route path="portfolio/:id" element={<PortfolioPage />} />
       </Route>
       <Route path="/public" element={<PublicLayout />}>
+        <Route path="portfolio/:id" element={<PortfolioPage />} />
         <Route path=":id" element={<BlogDetailPage />} />
         <Route path="home" element={<HomePage />} />
       </Route>
 
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/portfolio/:id" element={<PortfolioPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+
       {/* <Route path="*" element={<NotFound />} /> */}
     </Routes>
   );

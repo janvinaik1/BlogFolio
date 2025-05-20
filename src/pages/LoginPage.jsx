@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import authService from "../services/auth.services"; 
+import authService from "../services/auth.services";
+
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -17,7 +18,8 @@ const LoginPage = () => {
 
     if (res.token) {
       localStorage.setItem("token", res.token);
-      localStorage.setItem("user", JSON.stringify(res.user || {})); 
+      localStorage.setItem("user", JSON.stringify(res.user || {}));
+
       const userId = res.user?.id;
       navigate(`/blog/home?authorId=${userId}`);
     } else {
@@ -40,6 +42,14 @@ const LoginPage = () => {
         <div>
           <label className="block mb-1">Password</label>
           <input type="password" name="password" value={formData.password} onChange={handleChange} required className="w-full px-4 py-2 rounded bg-gray-700 focus:outline-none" />
+          <div className="text-right mt-1">
+            <span 
+              className="text-sm text-purple-400 cursor-pointer hover:underline"
+              onClick={() => navigate("/forgot-password")}
+            >
+              Forgot password?
+            </span>
+          </div>
         </div>
 
         <button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 transition-colors py-2 rounded text-white font-semibold">
@@ -47,7 +57,7 @@ const LoginPage = () => {
         </button>
 
         <p className="text-sm text-center">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <span className="text-purple-400 cursor-pointer hover:underline" onClick={() => navigate("/register")}>
             Register
           </span>

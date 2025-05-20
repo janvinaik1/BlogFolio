@@ -13,11 +13,15 @@ const BlogCard = ({ blog, onDelete, onEdit }) => {
   } catch (err) {
     console.error("Error parsing user from localStorage:", err);
   }
-
+ 
   const isAuthor = userId === blog.author?._id;
 
   const handleClick = () => {
+    if(userId){
     navigate(`/blog/${blog._id}`);
+    }else{
+       navigate(`/public/${blog._id}`);
+    }
   };
 
   const handleEdit = (e) => {

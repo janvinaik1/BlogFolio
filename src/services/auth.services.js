@@ -29,6 +29,24 @@ const authService = {
 
   getCurrentUser: () => {
     return JSON.parse(localStorage.getItem("user"));
+  },
+
+  forgotPassword:async(email)=>{
+    try{
+      const response=await axiosInstance.post("/forgot-password",email)
+      return response.data;
+    }catch(error){
+      console.error("error:", error);
+    }
+  },
+
+  resetPassword:async(token,newPassword)=>{
+    try{
+      const response=await axiosInstance.post("/reset-password",{token,newPassword})
+      return response.data;
+    }catch(error){
+      console.error("error resetting password:", error);
+    }
   }
 };
 
