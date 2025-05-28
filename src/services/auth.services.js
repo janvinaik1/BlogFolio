@@ -1,10 +1,11 @@
 // src/services/authService.js
 import axiosInstance from "../../axios.config";
 
+
 const authService = {
   login: async (blogData) => {
     try {
-      const response = await axiosInstance.post("/login", blogData);
+      const response = await axiosInstance.post(`/login`, blogData);
       return response.data;
     } catch (error) {
       console.error("Login error:", error);

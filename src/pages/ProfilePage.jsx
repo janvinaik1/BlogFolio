@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const ProfilePage = () => {
   const [userId, setUserId] = useState(null);
@@ -15,7 +15,7 @@ const ProfilePage = () => {
     }
   }, []);
 
-  const shareableLink = `${window.location.origin}/public/portfolio/${userId}`;
+  const internalShareableLink = `/public/portfolio/${userId}`;
 
   if (!userId || !username) return <p className="p-6 text-lg">Loading...</p>;
 
@@ -27,14 +27,12 @@ const ProfilePage = () => {
         <p className="text-lg">
           🔗 Share your portfolio and blogs:
         </p>
-        <a
-          href={shareableLink}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          to={internalShareableLink}
           className="text-blue-600 underline break-all"
         >
-          {shareableLink}
-        </a>
+          {window.location.origin + internalShareableLink}
+        </Link>
       </div>
 
       <div className="space-y-4">

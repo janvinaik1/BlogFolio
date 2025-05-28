@@ -22,6 +22,7 @@ const LoginPage = () => {
 
       const userId = res.user?.id;
       navigate(`/blog/home?authorId=${userId}`);
+     
     } else {
       setError(res.message || "Invalid email or password");
     }

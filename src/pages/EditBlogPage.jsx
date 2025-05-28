@@ -64,19 +64,104 @@ const EditBlogForm = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-4">Edit Blog Post</h1>
-      {error && <p className="text-red-500">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input name="title" value={formData.title} onChange={handleChange} />
-        <MDEditor value={formData.content} onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))} />
-        <input name="tags" value={formData.tags} onChange={handleChange} />
-        <input name="coverImage" value={formData.coverImage} onChange={handleChange} />
-        <input name="readTime" value={formData.readTime} onChange={handleChange} type="number" />
-        <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">Update Blog</button>
-      </form>
-    </div>
-  );
+  <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-900 shadow-lg rounded-2xl mt-10">
+    <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+      ✍️ Edit Blog Post
+    </h1>
+
+    {error && (
+      <p className="text-red-500 font-medium mb-4 bg-red-100 dark:bg-red-800 p-3 rounded-lg">
+        {error}
+      </p>
+    )}
+
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Title */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Title
+        </label>
+        <input
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          placeholder="Enter blog title"
+          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
+      {/* Content */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Content (Markdown)
+        </label>
+        <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
+          <MDEditor
+            value={formData.content}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, content: value }))
+            }
+            height={400}
+          />
+        </div>
+      </div>
+
+      {/* Tags */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Tags (comma separated)
+        </label>
+        <input
+          name="tags"
+          value={formData.tags}
+          onChange={handleChange}
+          placeholder="e.g., tech, coding, react"
+          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
+      {/* Cover Image */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Cover Image URL
+        </label>
+        <input
+          name="coverImage"
+          value={formData.coverImage}
+          onChange={handleChange}
+          placeholder="https://example.com/image.jpg"
+          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
+      {/* Read Time */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Estimated Read Time (minutes)
+        </label>
+        <input
+          name="readTime"
+          value={formData.readTime}
+          onChange={handleChange}
+          type="number"
+          min={1}
+          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
+      {/* Submit Button */}
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
+        >
+          Update Blog
+        </button>
+      </div>
+    </form>
+  </div>
+);
+
 };
 
 export default EditBlogForm;

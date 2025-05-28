@@ -24,6 +24,12 @@ const CreatePortfolioForm = () => {
     ],
     experience: [{ company: "", position: "", duration: "", description: "" }],
     education: [{ school: "", degree: "", year: "", description: "" }],
+    contact: {
+      email: "",
+      phone: "",
+      website: "",
+      address: "",
+    },
   });
 
   const [error, setError] = useState(null);
@@ -38,6 +44,17 @@ const CreatePortfolioForm = () => {
       updated[index][key] = value;
     }
     setFormData({ ...formData, [type]: updated });
+  };
+
+  const handleContactChange = (e, key) => {
+    const { value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      contact: {
+        ...prevFormData.contact,
+        [key]: value,
+      },
+    }));
   };
 
   const handleSimpleChange = (e) => {
@@ -68,7 +85,6 @@ const CreatePortfolioForm = () => {
 
     const user = JSON.parse(storedUser);
     const userId = user.id;
-    console.log("Im here umm:", userId);
     try {
       const portfolioData = {
         ...formData,
@@ -99,7 +115,7 @@ const CreatePortfolioForm = () => {
   ];
 
   return (
-   <div className="bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen py-12 px-4">
+    <div className="bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen py-12 px-4">
       <div className="max-w-5xl mx-auto bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
           <h2 className="text-3xl font-bold">
@@ -240,8 +256,8 @@ const CreatePortfolioForm = () => {
                         <input
                           name="email"
                           type="email"
-                          value={formData.contact?.email || ''}
-                          onChange={(e) => handleContactChange(e, 'email')}
+                          value={formData.contact?.email || ""}
+                          onChange={(e) => handleContactChange(e, "email")}
                           placeholder="your.email@example.com"
                           className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
@@ -253,8 +269,8 @@ const CreatePortfolioForm = () => {
                         <input
                           name="phone"
                           type="tel"
-                          value={formData.contact?.phone || ''}
-                          onChange={(e) => handleContactChange(e, 'phone')}
+                          value={formData.contact?.phone || ""}
+                          onChange={(e) => handleContactChange(e, "phone")}
                           placeholder="+1 (555) 123-4567"
                           className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
@@ -268,8 +284,8 @@ const CreatePortfolioForm = () => {
                         <input
                           name="website"
                           type="url"
-                          value={formData.contact?.website || ''}
-                          onChange={(e) => handleContactChange(e, 'website')}
+                          value={formData.contact?.website || ""}
+                          onChange={(e) => handleContactChange(e, "website")}
                           placeholder="https://your-website.com"
                           className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
@@ -280,8 +296,8 @@ const CreatePortfolioForm = () => {
                         </label>
                         <input
                           name="address"
-                          value={formData.contact?.address || ''}
-                          onChange={(e) => handleContactChange(e, 'address')}
+                          value={formData.contact?.address || ""}
+                          onChange={(e) => handleContactChange(e, "address")}
                           placeholder="City, State, Country"
                           className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />

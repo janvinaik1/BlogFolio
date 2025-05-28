@@ -4,15 +4,18 @@ const portfolioService = {
   getPortfolio: async (id) => {
     try {
       const response = await axiosInstance.get(`/portfolio/${id}`);
-      return response.data;
+       return {hasPortfolio:true,portfolio:response.data};
     } catch (err) {
       console.error("error fetching portfolio", err);
+      if (err.response?.status === 404) {
+      return { hasPortfolio: false, portfolio: null };
+    }
+    throw err;
     }
   },
 
   createPortfolio: async (portfoliodata, token,userId) => {
     try {
-      console.log("testing:",portfoliodata)
       const response = await axiosInstance.post(
         `/portfolio/create/${userId}`,
         portfoliodata,
