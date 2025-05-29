@@ -14,7 +14,6 @@ import ForgotPasswordPage from "../pages/ForgotPassword";
 import ResetPasswordPage from "../pages/ResetPassword";
 import LandingPage from "../pages/LandingPage";
 import PortfolioPage from "../pages/PortfolioManagement";
-// import Dashboard from "../pages/Dashboard";
 // import NotFound from "./pages/NotFound"; // optional
 
 const router = createBrowserRouter([
@@ -46,7 +45,6 @@ const router = createBrowserRouter([
   },
   { path: "/login", element: <LoginPage /> },
   { path: "/register", element: <RegisterPage /> },
-//   { path: "/dashboard", element: <Dashboard /> },
   { path: "/forgot-password", element: <ForgotPasswordPage /> },
   { path: "/reset-password", element: <ResetPasswordPage /> },
   { path: "view/portfolio/:id", element: <ViewPortfolio /> },

@@ -21,7 +21,7 @@ const LoginPage = () => {
       localStorage.setItem("user", JSON.stringify(res.user || {}));
 
       const userId = res.user?.id;
-      navigate(`/blog/home?authorId=${userId}`);
+      navigate(`/blog/profile`);
      
     } else {
       setError(res.message || "Invalid email or password");
