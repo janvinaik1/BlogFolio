@@ -2,7 +2,7 @@ import axios from "axios";
 
 const ip = window.location.hostname;
 const port = 5000; 
-const baseURL = `http://${ip}:${port}`;
+const baseURL = `https://personal-blog-portfolio-backend.vercel.app`;
 
 const baseConfig = {
     baseURL: baseURL,
