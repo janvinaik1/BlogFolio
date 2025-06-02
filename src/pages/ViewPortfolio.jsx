@@ -1,229 +1,235 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import portfolioService from '../services/portfolio.services';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import portfolioService from "../services/portfolio.services";
 
-export default function PortfolioPage() {
+import BasicInfoView from "../components/view_portfolio/BasicInfo";
+import ContactAndSocialView from "../components/view_portfolio/ContactInfo";
+import SkillsView from "../components/view_portfolio/Skills";
+import ProjectsView from "../components/view_portfolio/Project";
+import EducationView from "../components/view_portfolio/Education";
+import ExperienceView from "../components/view_portfolio/Expericence";
+import BlogLinkView from "../components/view_portfolio/Blog";
+
+
+const ViewPortfolio = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
-
-  const [loading, setLoading] = useState(true);
   const [portfolio, setPortfolio] = useState(null);
   const [error, setError] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const fetchPortfolio = async () => {
       try {
-        setLoading(true);
-        const result = await portfolioService.getPortfolio(id);
-        setPortfolio(result.portfolio);
+        const { hasPortfolio, portfolio } = await portfolioService.getPortfolio(id);
+        if (hasPortfolio) {
+          setPortfolio(portfolio);
+        } else {
+          setError("Portfolio not found.");
+        }
       } catch (err) {
-        console.error('Failed to fetch portfolio:', err);
-        setError('Something went wrong while loading the portfolio.');
-      } finally {
-        setLoading(false);
+        console.error("Failed to load portfolio", err);
+        setError("Error loading portfolio.");
       }
     };
 
-    // Check if user is logged in
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) setIsLoggedIn(true);
-
-    if (id) fetchPortfolio();
+    fetchPortfolio();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">
-        <p className="animate-pulse">Loading portfolio...</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    // Mouse tracking
+    const handleMouseMove = (e) => {
+      setMousePosition({
+        x: e.clientX,
+        y: e.clientY
+      });
+    };
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center text-red-400">
-        <p>{error}</p>
-      </div>
-    );
-  }
+    const handleMouseEnter = () => setIsHovering(true);
+    const handleMouseLeave = () => setIsHovering(false);
 
-  if (!portfolio) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center text-gray-400">
-        <p>Portfolio not found.</p>
-      </div>
-    );
-  }
+    // Add event listeners
+    window.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseenter', handleMouseEnter);
+    document.addEventListener('mouseleave', handleMouseLeave);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseenter', handleMouseEnter);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
+
+  if (error) return <p className="text-red-500">{error}</p>;
+  if (!portfolio) return <p className="text-gray-500">Loading portfolio...</p>;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white px-6 py-10">
-      <div className="max-w-5xl mx-auto space-y-10">
+    <section className="relative min-h-screen bg-gradient-to-br from-[#0b0c1a] via-[#1a1a2e] to-[#121212] text-white overflow-hidden cursor-none">
+      {/* Custom Cursor */}
+      <motion.div
+        className="fixed top-0 left-0 w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full pointer-events-none z-50 mix-blend-difference"
+        style={{
+          x: mousePosition.x - 12,
+          y: mousePosition.y - 12,
+        }}
+        animate={{
+          scale: isHovering ? 1.5 : 1,
+          opacity: isHovering ? 0.8 : 0.6,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 500,
+          damping: 28,
+          mass: 0.5,
+        }}
+      />
 
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-center gap-6">
-          <img
-            src={portfolio.avatar}
-            alt={portfolio.name}
-            className="w-24 h-24 rounded-full border-2 border-gray-700 object-cover"
-          />
-          <div>
-            <h1 className="text-3xl font-bold">{portfolio.name}</h1>
-            <p className="text-gray-400">{portfolio.title}</p>
-            {portfolio.contactEmail && (
-              <p className="text-gray-400 text-sm mt-1">📧 {portfolio.contactEmail}</p>
-            )}
-          </div>
-        </div>
+      {/* Cursor Trail */}
+      <motion.div
+        className="fixed top-0 left-0 w-12 h-12 border-2 border-purple-400 rounded-full pointer-events-none z-40"
+        style={{
+          x: mousePosition.x - 24,
+          y: mousePosition.y - 24,
+        }}
+        animate={{
+          scale: isHovering ? 1.8 : 1,
+          opacity: isHovering ? 0.4 : 0.2,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 150,
+          damping: 15,
+          mass: 0.8,
+        }}
+      />
 
-        {/* Bio */}
-        {portfolio.bio && (
-          <section>
-            <h2 className="text-xl font-semibold mb-2">About</h2>
-            <p className="text-gray-300 whitespace-pre-line">{portfolio.bio}</p>
-          </section>
-        )}
+      {/* Mouse Follow Gradient Blob */}
+      <motion.div
+        className="fixed top-0 left-0 w-96 h-96 bg-gradient-to-r from-purple-600/20 via-pink-500/15 to-blue-500/10 rounded-full blur-3xl pointer-events-none z-5"
+        style={{
+          x: mousePosition.x - 192,
+          y: mousePosition.y - 192,
+        }}
+        animate={{
+          scale: isHovering ? 1.2 : 0.8,
+          opacity: isHovering ? 0.6 : 0.3,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 50,
+          damping: 20,
+          mass: 2,
+        }}
+      />
 
-        {/* Skills */}
-        {portfolio.skills?.length > 0 && (
-          <section>
-            <h2 className="text-xl font-semibold mb-2">Skills</h2>
-            <div className="flex flex-wrap gap-2">
-              {portfolio.skills.map(skill => (
-                <span
-                  key={skill._id}
-                  className="px-3 py-1 bg-blue-600/20 text-blue-300 text-sm rounded-full border border-blue-500/30"
-                >
-                  {skill.name} — {skill.level}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
+      {/* Static Glowing Blobs */}
+      <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-purple-700 opacity-20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-indigo-500 opacity-20 rounded-full blur-2xl animate-pulse delay-1000" />
+      
+      {/* Interactive Floating Particles */}
+      <motion.div
+        className="absolute w-2 h-2 bg-purple-400 rounded-full opacity-40 pointer-events-none z-10"
+        style={{
+          x: mousePosition.x * 0.1,
+          y: mousePosition.y * 0.1,
+        }}
+        transition={{ type: "spring", stiffness: 100, damping: 10 }}
+      />
+      <motion.div
+        className="absolute w-1 h-1 bg-pink-400 rounded-full opacity-60 pointer-events-none z-10"
+        style={{
+          x: mousePosition.x * 0.05 + 100,
+          y: mousePosition.y * 0.05 + 50,
+        }}
+        transition={{ type: "spring", stiffness: 80, damping: 8 }}
+      />
+      <motion.div
+        className="absolute w-3 h-3 bg-blue-400 rounded-full opacity-30 pointer-events-none z-10"
+        style={{
+          x: mousePosition.x * 0.08 - 50,
+          y: mousePosition.y * 0.08 + 200,
+        }}
+        transition={{ type: "spring", stiffness: 60, damping: 12 }}
+      />
 
-        {/* Experience */}
-        {portfolio.experience?.length > 0 && (
-          <section>
-            <h2 className="text-xl font-semibold mb-2">Experience</h2>
-            <ul className="space-y-2">
-              {portfolio.experience.map(exp => (
-                <li key={exp._id} className="border-l-4 border-blue-500 pl-4">
-                  <p className="font-semibold text-blue-400">{exp.position}</p>
-                  <p className="text-gray-300">{exp.company}</p>
-                  <p className="text-gray-500 text-sm">{exp.duration}</p>
-                  {exp.description && <p className="text-gray-400">{exp.description}</p>}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {/* Projects */}
-        {portfolio.projects?.length > 0 && (
-          <section>
-            <h2 className="text-xl font-semibold mb-2">Projects</h2>
-            <div className="grid sm:grid-cols-2 gap-6">
-              {portfolio.projects.map(project => (
-                <div
-                  key={project._id}
-                  className="bg-gray-800 border border-gray-700 rounded-lg p-4 shadow-md"
-                >
-                  {project.image && (
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-40 object-cover rounded mb-3"
-                    />
-                  )}
-                  <h3 className="text-lg font-bold text-blue-300">{project.title}</h3>
-                  <p className="text-gray-400 text-sm mt-1">{project.description || 'No description.'}</p>
-                  <div className="mt-2 text-sm text-gray-500">
-                    {project.techStack?.join(', ')}
-                  </div>
-                  <div className="mt-3 flex gap-4 text-sm">
-                    {project.githubLink && (
-                      <a
-                        href={project.githubLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-400 hover:underline"
-                      >
-                        GitHub
-                      </a>
-                    )}
-                    {project.liveDemo && (
-                      <a
-                        href={project.liveDemo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-green-400 hover:underline"
-                      >
-                        Live Demo
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Social Links */}
-        {portfolio.socialLinks?.length > 0 && (
-          <section>
-            <h2 className="text-xl font-semibold mb-2">Connect with me</h2>
-            <div className="flex gap-4 flex-wrap">
-              {portfolio.socialLinks.map(link => (
-                <a
-                  key={link._id}
-                  href={link.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 hover:underline"
-                >
-                  {link.platform}
-                </a>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Contact Info */}
-        {portfolio.contact && (
-          <section>
-            <h2 className="text-xl font-semibold mb-2">Contact</h2>
-            <ul className="text-gray-300 space-y-1">
-              {portfolio.contact.phone && <li>📞 {portfolio.contact.phone}</li>}
-              {portfolio.contact.address && <li>📍 {portfolio.contact.address}</li>}
-              {portfolio.contact.website && (
-                <li>
-                  🌐 <a href={portfolio.contact.website} className="text-blue-400 hover:underline" target="_blank" rel="noreferrer">{portfolio.contact.website}</a>
-                </li>
-              )}
-              {portfolio.contact.email && <li>📧 {portfolio.contact.email}</li>}
-            </ul>
-          </section>
-        )}
-
-        {/* Navigation Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 pt-10 justify-center">
-          <button
-            onClick={() => navigate(`/public/home?authorId=${portfolio._id}`)}
-            className="bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg shadow"
+      {/* Main Content */}
+      <div className="relative z-20 px-6 py-12 max-w-7xl mx-auto space-y-20 scroll-smooth">
+        <motion.section 
+          id="basic"
+          onHoverStart={() => setIsHovering(true)}
+          onHoverEnd={() => setIsHovering(false)}
+          whileHover={{ scale: 1.01 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          <BasicInfoView portfolio={portfolio} />
+        </motion.section>
+        
+        <motion.section 
+          id="experience"
+          onHoverStart={() => setIsHovering(true)}
+          onHoverEnd={() => setIsHovering(false)}
+          whileHover={{ scale: 1.01 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          <ExperienceView experience={portfolio.experience} />
+        </motion.section>
+        
+        <motion.section 
+          id="skills"
+          onHoverStart={() => setIsHovering(true)}
+          onHoverEnd={() => setIsHovering(false)}
+          whileHover={{ scale: 1.01 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          <SkillsView skills={portfolio.skills} />
+        </motion.section>
+        
+        <motion.section 
+          id="projects"
+          onHoverStart={() => setIsHovering(true)}
+          onHoverEnd={() => setIsHovering(false)}
+          whileHover={{ scale: 1.01 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          <ProjectsView projects={portfolio.projects} />
+        </motion.section>
+        
+        <motion.section 
+          id="education"
+          onHoverStart={() => setIsHovering(true)}
+          onHoverEnd={() => setIsHovering(false)}
+          whileHover={{ scale: 1.01 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          <EducationView education={portfolio.education} />
+        </motion.section>
+        
+        {portfolio.wantsBlog === "yes" && (
+          <motion.section 
+            id="blog"
+            onHoverStart={() => setIsHovering(true)}
+            onHoverEnd={() => setIsHovering(false)}
+            whileHover={{ scale: 1.01 }}
+            transition={{ type: "spring", stiffness: 300 }}
           >
-            View My Blogs
-          </button>
-
-          {isLoggedIn && (
-            <button
-              onClick={() => navigate('/blog/profile')}
-              className="bg-gray-700 hover:bg-gray-800 px-5 py-2 rounded-lg shadow"
-            >
-              Back to Profile
-            </button>
-          )}
-        </div>
+            <BlogLinkView />
+          </motion.section>
+        )}
+        
+        <motion.section 
+          id="contact"
+          onHoverStart={() => setIsHovering(true)}
+          onHoverEnd={() => setIsHovering(false)}
+          whileHover={{ scale: 1.01 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          <ContactAndSocialView contact={portfolio.contact} socialLinks={portfolio.socialLinks} />
+        </motion.section>
       </div>
-    </div>
+    </section>
   );
-}
+};
+
+export default ViewPortfolio;

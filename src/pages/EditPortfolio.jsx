@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import portfolioService from "../services/portfolio.services";
-import { useNavigate } from "react-router-dom";
 import BasicInfoForm from "../components/create_portfolio/BasicInfo";
 import ContactAndSocialForm from "../components/create_portfolio/ContactandSocialLinks";
 import SkillsSection from "../components/create_portfolio/Skills";
@@ -8,8 +8,10 @@ import ProjectsSection from "../components/create_portfolio/Project";
 import EducationForm from "../components/create_portfolio/Education";
 import ExperienceForm from "../components/create_portfolio/Exprience";
 
-const CreatePortfolioForm = () => {
+const EditPortfolioForm = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+
   const [formData, setFormData] = useState({
     name: "",
     title: "",
@@ -41,6 +43,24 @@ const CreatePortfolioForm = () => {
 
   const [error, setError] = useState(null);
   const [activeSection, setActiveSection] = useState("basic");
+
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      try {
+        const { hasPortfolio, portfolio } = await portfolioService.getPortfolio(
+          id
+        );
+        if (hasPortfolio && portfolio) {
+          setFormData(portfolio);
+        } else {
+          setError("No portfolio found with this ID.");
+        }
+      } catch (err) {
+        setError("Failed to load portfolio data.");
+      }
+    };
+    fetchPortfolio();
+  }, [id]);
 
   const handleChange = (e, index, key, type, isArray = false) => {
     const { value } = e.target;
@@ -82,17 +102,15 @@ const CreatePortfolioForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    const token = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
 
-    if (!storedUser) {
-      setError("User not found. Please log in again.");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("You must be logged in to update your portfolio.");
       return;
     }
 
-    const user = JSON.parse(storedUser);
-    const userId = user.id;
     try {
+      // Clean up data before submitting
       const portfolioData = {
         ...formData,
 
@@ -131,12 +149,11 @@ const CreatePortfolioForm = () => {
         showBlogs: formData.wantsBlog === true,
       };
 
-      console.log("portfolioData being saved:", portfolioData);
-      await portfolioService.createPortfolio(portfolioData, token, userId);
-      navigate(`/view/portfolio/${userId}`);
-    } catch (error) {
-      console.error("Error creating portfolio:", error);
-      setError("Failed to create portfolio. Please try again.");
+      await portfolioService.updatePortfolio(id, portfolioData, token);
+      navigate(`/view/portfolio/${id}`);
+    } catch (err) {
+      console.error("Error updating portfolio:", err);
+      setError("Failed to update portfolio. Please try again.");
     }
   };
 
@@ -154,10 +171,9 @@ const CreatePortfolioForm = () => {
     <div className="bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen py-12 px-4">
       <div className="max-w-5xl mx-auto bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-          <h2 className="text-3xl font-bold">Create Your Portfolio</h2>
-          <p className="mt-2 opacity-80">
-            Showcase your skills and projects with a professional portfolio
-          </p>
+          <h2 className="text-3xl font-bold">Edit Your Portfolio</h2>
+          <p className="mt-2 opacity-80">Update your skills and projects</p>
+          {error && <p className="mt-2 text-red-400 font-semibold">{error}</p>}
         </div>
 
         <div className="flex flex-col md:flex-row">
@@ -186,12 +202,13 @@ const CreatePortfolioForm = () => {
                   form="portfolio-form"
                   className="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium rounded-lg transition-all transform hover:scale-105 flex items-center justify-center"
                 >
-                  <span>Submit Portfolio</span>
+                  <span>Update Portfolio</span>
                 </button>
               </div>
             </div>
           </div>
 
+          {/* Main Form Content */}
           <div className="flex-1 bg-gray-800 p-8">
             <form
               id="portfolio-form"
@@ -225,7 +242,8 @@ const CreatePortfolioForm = () => {
                 addField={addField}
                 removeField={removeField}
               />
-              {/* Projects*/}
+
+              {/* PROJECTS */}
               <ProjectsSection
                 activeSection={activeSection}
                 formData={formData}
@@ -234,6 +252,7 @@ const CreatePortfolioForm = () => {
                 removeField={removeField}
               />
 
+              {/* EXPERIENCE */}
               <ExperienceForm
                 experience={formData.experience}
                 handleChange={handleChange}
@@ -242,6 +261,7 @@ const CreatePortfolioForm = () => {
                 isActive={activeSection === "experience"}
               />
 
+              {/* EDUCATION */}
               <EducationForm
                 education={formData.education}
                 handleChange={handleChange}
@@ -249,6 +269,8 @@ const CreatePortfolioForm = () => {
                 removeField={removeField}
                 isActive={activeSection === "education"}
               />
+
+              {/* BLOGS */}
               {activeSection === "blogs" && (
                 <div className="bg-gray-750 rounded-xl p-6 border border-gray-700 mb-6">
                   <h3 className="text-xl font-semibold text-white mb-4">
@@ -259,6 +281,7 @@ const CreatePortfolioForm = () => {
                       <input
                         type="radio"
                         name="wantsBlog"
+                        value={true}
                         checked={formData.wantsBlog === true}
                         onChange={() =>
                           setFormData({ ...formData, wantsBlog: true })
@@ -271,6 +294,7 @@ const CreatePortfolioForm = () => {
                       <input
                         type="radio"
                         name="wantsBlog"
+                        value={false}
                         checked={formData.wantsBlog === false}
                         onChange={() =>
                           setFormData({ ...formData, wantsBlog: false })
@@ -290,4 +314,4 @@ const CreatePortfolioForm = () => {
   );
 };
 
-export default CreatePortfolioForm;
+export default EditPortfolioForm;

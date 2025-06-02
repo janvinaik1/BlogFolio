@@ -1,8 +1,9 @@
 import axios from "axios";
 
-const ip = window.location.hostname;
-const port = 5000; 
-const baseURL = `https://personal-blog-portfolio-backend.vercel.app`;
+const isLocalhost = window.location.hostname === "localhost";
+const baseURL = isLocalhost
+  ? "http://localhost:5000"
+  : "https://personal-blog-portfolio-backend.vercel.app";//PUT THIS IN .ENV 
 
 const baseConfig = {
     baseURL: baseURL,

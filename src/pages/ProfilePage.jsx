@@ -59,13 +59,13 @@ const ProfilePage = () => {
             onClick={() => navigate(`/blog/portfolio/${userId}`)}
             className="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-lg shadow-md transition transform hover:scale-105"
           >
-            Create Portfolio
+            Go to Portfolio
           </button>
           <button
             onClick={() => navigate(`/blog/home?authorId=${userId}`)}
             className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg shadow-md transition transform hover:scale-105"
           >
-            Create Blog
+            Go to Blog
           </button>
         </div>
 

@@ -14,6 +14,7 @@ import ForgotPasswordPage from "../pages/ForgotPassword";
 import ResetPasswordPage from "../pages/ResetPassword";
 import LandingPage from "../pages/LandingPage";
 import PortfolioPage from "../pages/PortfolioManagement";
+import EditPortfolioForm from "../pages/EditPortfolio";
 // import NotFound from "./pages/NotFound"; // optional
 
 const router = createBrowserRouter([
@@ -31,7 +32,8 @@ const router = createBrowserRouter([
       { path: "home", element: <HomePage /> },
       { path: "edit/:id", element: <EditBlogPage /> },
       { path: "createportfolio", element: <CreatePortfolio /> },
-      { path: "portfolio/:id", element: <PortfolioPage /> }
+      { path: "portfolio/:id", element: <PortfolioPage /> },
+      { path: "edit/portfolio/:id", element: <EditPortfolioForm /> }
     ],
   },
   {
