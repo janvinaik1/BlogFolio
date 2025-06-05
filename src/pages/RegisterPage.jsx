@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import authService from "../services/auth.services";
+import ButtonLoader from "../components/ButtonLoader";
 
 const RegisterPage = () => {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -17,6 +19,7 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const result = await authService.register(formData);
 
@@ -65,11 +68,13 @@ const RegisterPage = () => {
 
         <button
           type="submit"
-          className="w-full bg-purple-600 hover:bg-purple-700 py-2 rounded font-semibold"
+          disabled={loading}
+          className={`w-full flex justify-center items-center gap-2 bg-purple-600 hover:bg-purple-700 transition-colors py-2 rounded text-white font-semibold ${
+            loading ? "cursor-not-allowed opacity-70" : ""
+          }`}
         >
-          Register
+          {loading ? <ButtonLoader /> : "Register"}
         </button>
-
         <p className="text-sm text-center">
           Already have an account?{" "}
           <span

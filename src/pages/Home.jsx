@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { AlertTriangle } from "lucide-react"; // Add this import
 import blogService from "../services/blog.services";
 import BlogCard from "../components/BlogCard";
 
@@ -19,6 +20,8 @@ const HomePage = () => {
   const [pendingQuery, setPendingQuery] = useState(initialSearch);
   const [tagFilter, setTagFilter] = useState(tag);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // Add missing error state
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
@@ -27,9 +30,13 @@ const HomePage = () => {
     }
   }, []);
 
-  const fetchBlogs = async () => {
+  // Use useCallback to prevent unnecessary re-renders
+  const fetchBlogs = useCallback(async () => {
     try {
+      setLoading(true);
+      setError(null); // Clear any previous errors
       let response;
+      
       if (searchQuery.trim() !== "") {
         response = await blogService.search(searchQuery);
         setBlogs(response);
@@ -45,12 +52,15 @@ const HomePage = () => {
       }
     } catch (err) {
       console.error("Failed to fetch blogs:", err);
+      setError(err.message || "Failed to fetch blogs. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [searchQuery, authorId, page, tagFilter]);
 
   useEffect(() => {
     fetchBlogs();
-  }, [page, tagFilter, authorId, searchQuery]);
+  }, [fetchBlogs]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -62,6 +72,7 @@ const HomePage = () => {
       }
       navigate({ search: params.toString() }, { replace: true });
       setSearchQuery(pendingQuery);
+      setPage(1); // Reset to first page when searching
     }
   };
 
@@ -71,33 +82,90 @@ const HomePage = () => {
       fetchBlogs();
     } catch (error) {
       console.error("Delete failed:", error);
+      setError("Failed to delete blog post. Please try again.");
     }
   };
 
+  const handleBackToAll = () => {
+    const params = new URLSearchParams(location.search);
+    params.delete("search");
+    navigate({ search: params.toString() }, { replace: true });
+    setSearchQuery("");
+    setPendingQuery("");
+    setPage(1);
+  };
+
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      setPage(prev => prev - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage(prev => prev + 1);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="text-center">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500/30 border-t-blue-500 mx-auto mb-6"></div>
+            <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-purple-500/20 border-r-purple-500 animate-spin-reverse mx-auto"></div>
+          </div>
+          <p className="text-gray-300 text-lg font-medium">Loading Blogs...</p>
+          <p className="text-gray-500 text-sm mt-2">
+            Please wait while we fetch your data
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
+        <div className="bg-red-900/20 backdrop-blur-sm border border-red-500/30 rounded-2xl p-8 w-full max-w-md text-center shadow-2xl">
+          <div className="bg-red-500/20 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+            <AlertTriangle className="w-8 h-8 text-red-400" />
+          </div>
+          <h2 className="text-red-300 text-xl font-semibold mb-3">
+            Something went wrong
+          </h2>
+          <p className="text-gray-300 mb-6 leading-relaxed">{error}</p>
+          <button
+            onClick={() => {
+              setError(null);
+              fetchBlogs();
+            }}
+            className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-red-500/25 hover:scale-105"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 min-h-screen text-white">
-      <div className="max-w-5xl mx-auto px-4 py-10 ">
+      <div className="max-w-5xl mx-auto px-4 py-10">
         {initialSearch && (
           <div className="mb-4">
             <button
-              onClick={() => {
-                const params = new URLSearchParams(location.search);
-                params.delete("search");
-                navigate({ search: params.toString() }, { replace: true });
-                setSearchQuery("");
-                setPendingQuery("");
-                setPage(1);
-              }}
-              className="text-white hover:underline"
+              onClick={handleBackToAll}
+              className="text-white hover:underline transition-all duration-200 hover:text-blue-400"
             >
-              ← Back
+              ← Back to all blogs
             </button>
           </div>
         )}
 
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Recent Blogs
+            {searchQuery ? `Search Results for "${searchQuery}"` : "Recent Blogs"}
           </h1>
 
           {user && (
@@ -163,36 +231,79 @@ const HomePage = () => {
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
-          {blogs.map((blog) => (
-            <BlogCard
-              key={blog._id}
-              blog={blog}
-              onDelete={handleDelete}
-              onEdit={(id) => navigate(`/blog/edit/${id}`)}
-            />
-          ))}
-        </div>
+        {blogs.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="bg-gray-800/50 rounded-2xl p-8 max-w-md mx-auto">
+              <div className="text-gray-400 mb-4">
+                <svg
+                  className="w-16 h-16 mx-auto"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-300 mb-2">
+                {searchQuery ? "No blogs found" : "No blogs yet"}
+              </h3>
+              <p className="text-gray-400">
+                {searchQuery 
+                  ? `No blogs match your search for "${searchQuery}"`
+                  : "Be the first to create a blog post!"
+                }
+              </p>
+              {user && !searchQuery && (
+                <button
+                  onClick={() => navigate("/blog/createblog")}
+                  className="mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                >
+                  Create Your First Blog
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
+            {blogs.map((blog) => (
+              <BlogCard
+                key={blog._id}
+                blog={blog}
+                onDelete={handleDelete}
+                onEdit={(id) => navigate(`/blog/edit/${id}`)}
+              />
+            ))}
+          </div>
+        )}
 
-        <div className="mt-10 flex justify-center items-center space-x-4">
-          <button
-            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-            disabled={page === 1}
-            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="text-gray-600 dark:text-white text-lg font-medium">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={page === totalPages}
-            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+        
+        {totalPages > 1 && (
+          <div className="mt-10 flex justify-center items-center space-x-4">
+            <button
+              onClick={handlePreviousPage}
+              disabled={page === 1}
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              Previous
+            </button>
+            <span className="text-gray-600 dark:text-white text-lg font-medium">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={page === totalPages}
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

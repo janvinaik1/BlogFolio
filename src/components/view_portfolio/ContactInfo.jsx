@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FaEnvelope, 
-  FaMobileAlt, // Changed from FaPhone
-  FaGlobe, 
-  FaMapMarkerAlt, 
-  FaCopy, 
+import {
+  FaEnvelope,
+  FaMobileAlt,
+  FaGlobe,
+  FaMapMarkerAlt,
+  FaCopy,
   FaCheck,
-  FaExternalLinkAlt
+  FaExternalLinkAlt,
 } from "react-icons/fa";
 
 const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
@@ -19,37 +19,37 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
       setCopiedItem(type);
       setTimeout(() => setCopiedItem(null), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error("Failed to copy:", err);
     }
   };
 
   const formatPhone = (phone) => {
-    return phone.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+    return phone.replace(/\D/g, "").replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
   };
 
   const getContactAction = (type, value) => {
     switch (type) {
-      case 'email':
+      case "email":
         return `mailto:${value}`;
-      case 'phone':
+      case "phone":
         return `tel:${value}`;
-      case 'website':
-        return value.startsWith('http') ? value : `https://${value}`;
+      case "website":
+        return value.startsWith("http") ? value : `https://${value}`;
       default:
-        return '#';
+        return "#";
     }
   };
 
   const contactIcons = {
-    email: { icon: FaEnvelope, color: 'blue', label: 'Email' },
-    phone: { icon: FaMobileAlt, color: 'emerald', label: 'Phone' }, // Updated icon
-    website: { icon: FaGlobe, color: 'purple', label: 'Website' },
-    address: { icon: FaMapMarkerAlt, color: 'red', label: 'Address' }
+    email: { icon: FaEnvelope, color: "blue", label: "Email" },
+    phone: { icon: FaMobileAlt, color: "emerald", label: "Phone" },
+    website: { icon: FaGlobe, color: "purple", label: "Website" },
+    address: { icon: FaMapMarkerAlt, color: "red", label: "Address" },
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <motion.div 
+    <div className="max-w-6xl mx-auto px-4 md:px-0">
+      <motion.div
         className="grid md:grid-cols-2 gap-8 mb-8"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -80,7 +80,7 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
                       if (!value || !contactIcons[key]) return null;
 
                       const { icon: Icon, color, label } = contactIcons[key];
-                      const isClickable = key !== 'address';
+                      const isClickable = key !== "address";
 
                       return (
                         <motion.div
@@ -91,7 +91,9 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
                           transition={{ delay: 0.3 + idx * 0.1 }}
                         >
                           <div className="flex items-center gap-4 flex-1 min-w-0">
-                            <div className={`bg-${color}-500/20 p-3 rounded-xl group-hover/item:bg-${color}-500/30 transition-all duration-300 flex-shrink-0`}>
+                            <div
+                              className={`bg-${color}-500/20 p-3 rounded-xl group-hover/item:bg-${color}-500/30 transition-all duration-300 flex-shrink-0`}
+                            >
                               <Icon className={`text-${color}-400 text-lg`} />
                             </div>
                             <div className="flex-1 min-w-0">
@@ -102,15 +104,17 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
                                 <a
                                   href={getContactAction(key, value)}
                                   className="text-white/90 hover:text-white font-medium break-all hover:underline decoration-2 underline-offset-4 transition-colors duration-300"
-                                  target={key === 'website' ? '_blank' : undefined}
-                                  rel={key === 'website' ? 'noopener noreferrer' : undefined}
+                                  target={key === "website" ? "_blank" : undefined}
+                                  rel={key === "website" ? "noopener noreferrer" : undefined}
                                 >
-                                  {key === 'phone' ? formatPhone(value) : value}
-                                  {key === 'website' && <FaExternalLinkAlt className="inline ml-2 text-xs opacity-70" />}
+                                  {key === "phone" ? formatPhone(value) : value}
+                                  {key === "website" && (
+                                    <FaExternalLinkAlt className="inline ml-2 text-xs opacity-70" />
+                                  )}
                                 </a>
                               ) : (
                                 <span className="text-white/90 font-medium break-all">
-                                  {key === 'phone' ? formatPhone(value) : value}
+                                  {key === "phone" ? formatPhone(value) : value}
                                 </span>
                               )}
                             </div>
@@ -153,7 +157,7 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
               ))}
             </div>
           ) : (
-            <motion.div 
+            <motion.div
               className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -163,7 +167,9 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
                 <FaEnvelope className="text-2xl text-white/60" />
               </div>
               <p className="text-white/60 text-lg font-medium">No contact details available</p>
-              <p className="text-white/40 text-sm mt-2">Contact information will appear here when added</p>
+              <p className="text-white/40 text-sm mt-2">
+                Contact information will appear here when added
+              </p>
             </motion.div>
           )}
         </div>
@@ -186,11 +192,11 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
                   className="group relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/10 hover:border-white/30 rounded-xl p-4 text-center transition-all duration-500 hover:shadow-lg hover:shadow-white/10"
                   initial={{ opacity: 0, scale: 0.8, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ 
-                    delay: 0.5 + idx * 0.1, 
+                  transition={{
+                    delay: 0.5 + idx * 0.1,
                     duration: 0.6,
                     type: "spring",
-                    stiffness: 100
+                    stiffness: 100,
                   }}
                   whileHover={{ y: -4, scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -210,34 +216,4 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
   );
 };
 
-// Demo component for testing
-const App = () => {
-  const sampleContact = [
-    {
-      email: "hello@example.com",
-      phone: "+1234567890",
-      website: "https://example.com",
-      address: "123 Main St, City, State 12345"
-    }
-  ];
-
-  const sampleSocialLinks = [
-    { platform: "LinkedIn", link: "https://linkedin.com" },
-    { platform: "Twitter", link: "https://twitter.com" },
-    { platform: "GitHub", link: "https://github.com" },
-    { platform: "Instagram", link: "https://instagram.com" },
-    { platform: "YouTube", link: "https://youtube.com" },
-    { platform: "Portfolio", link: "https://portfolio.com" }
-  ];
-
-  return (
-    <div >
-      <ContactAndSocialView 
-        contact={sampleContact} 
-        socialLinks={sampleSocialLinks} 
-      />
-    </div>
-  );
-};
-
-export default App;
+export default ContactAndSocialView;
