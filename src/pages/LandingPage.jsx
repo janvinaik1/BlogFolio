@@ -88,9 +88,9 @@ const LandingPage = () => {
 
             <a
               href="#features"
-              className="group inline-flex items-center justify-center px-10 py-5 text-lg font-bold text-white transition-all duration-300 bg-transparent border-2 border-white/30 rounded-full hover:border-orange-400 hover:bg-orange-400/10 hover:scale-105"
+              className="group inline-flex items-center justify-center px-10 py-5 text-lg font-bold text-black transition-all duration-300 bg-transparent border-2 border-white/30 rounded-full hover:border-orange-400 hover:bg-orange-400/10 hover:scale-105"
             >
-              Learn More
+             <b> Learn More</b>
               <svg
                 className="w-5 h-5 ml-2 transition-transform group-hover:translate-y-1"
                 fill="none"

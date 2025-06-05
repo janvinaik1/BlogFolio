@@ -110,7 +110,7 @@ const SocialLinks = ({ socialLinks }) => (
 
 // Action buttons component
 const ActionButtons = ({ portfolio, scrollToContact }) => {
-  const blogLink = `http://localhost:5173/public/home?authorId=${portfolio._id}`;
+  const blogLink = `https://personal-blog-portfolio-frontend.vercel.app/public/home?authorId=${portfolio._id}`;
 
   return (
     <motion.div
