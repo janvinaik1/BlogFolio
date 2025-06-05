@@ -131,7 +131,7 @@ const CreatePortfolioForm = () => {
         showBlogs: formData.wantsBlog === true,
       };
 
-      console.log("portfolioData being saved:", portfolioData);
+      
       await portfolioService.createPortfolio(portfolioData, token, userId);
       navigate(`/view/portfolio/${userId}`);
     } catch (error) {

@@ -375,7 +375,7 @@ export default function PortfolioPage() {
               Create your portfolio to showcase your skills and experience.
             </p>
             <button
-              onClick={() => navigate("/create")}
+              onClick={() => navigate("/blog/createportfolio")}
               className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium shadow transition-colors"
             >
               Create Portfolio

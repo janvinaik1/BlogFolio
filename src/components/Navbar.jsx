@@ -58,7 +58,6 @@ const Navbar = () => {
     { to: "/blog/profile", label: "Profile" },
  
   ] : [
-    { to: userId ? `/blog/home?authorId=${userId}` : "/blog/home", label: "Home" },
     { to: "/#features", label: "Features" },
   ];
 
@@ -102,7 +101,7 @@ const Navbar = () => {
             </div>
 
             {/* Theme Toggle */}
-            <button
+            {/* <button
               onClick={toggleTheme}
               className={`p-2 rounded-full transition duration-300 ${
                 isDarkMode 
@@ -120,7 +119,7 @@ const Navbar = () => {
                   <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
                 </svg>
               )}
-            </button>
+            </button> */}
 
             {/* Auth Buttons */}
             {user ? (
