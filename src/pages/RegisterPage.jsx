@@ -20,12 +20,19 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     const result = await authService.register(formData);
 
     if (result.msg === "User Created") {
       navigate("/login");
+    } else {
+      setError(result.msg || "Registration failed");
+      setTimeout(() => {
+        setError("");
+      }, 5000);
     }
+    setLoading(false);
   };
 
   return (

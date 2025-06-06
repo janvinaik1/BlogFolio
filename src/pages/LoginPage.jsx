@@ -26,18 +26,14 @@ const LoginPage = () => {
         localStorage.setItem("user", JSON.stringify(res.user || {}));
         navigate(`/blog/profile`);
       } else {
-        setError(res.message || "Invalid email or password");
+        setError(res.msg || "Invalid email or password");
       }
     } catch (err) {
-      console.error(err);
-      setError("Something went wrong. Please try again.");
+        setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-
-  // Show loader while logging in
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">

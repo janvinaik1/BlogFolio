@@ -50,17 +50,11 @@ const LandingPage = () => {
               BlogFolio
             </span>
           </h1>
-
-          <p className="text-xl md:text-3xl mb-8 font-light bg-gradient-to-r from-gray-100 to-gray-300 bg-clip-text text-transparent">
-            <b>Create. Curate. Connect.</b>
+          <p className="text-xl md:text-3xl mb-8 font-light text-white drop-shadow-md">
+            <span className="bg-gradient-to-r from-orange-200 via-yellow-100 to-white bg-clip-text text-transparent animate-gradient-x">
+              <b>Create. Curate. Connect.</b>
+            </span>
           </p>
-
-          {/* <p className="text-lg md:text-xl mb-12 text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Ready to share your{" "}
-            <span className="text-orange-400 font-semibold">story</span> with
-            the world? Join thousands of creators writing, building, and growing
-            their digital presence.
-          </p> */}
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <a
@@ -88,9 +82,9 @@ const LandingPage = () => {
 
             <a
               href="#features"
-              className="group inline-flex items-center justify-center px-10 py-5 text-lg font-bold text-black transition-all duration-300 bg-transparent border-2 border-white/30 rounded-full hover:border-orange-400 hover:bg-orange-400/10 hover:scale-105"
+              className="group inline-flex items-center justify-center px-10 py-5 text-lg font-bold text-white transition-all duration-300 border-2 border-white rounded-full hover:border-orange-400 hover:bg-orange-400/10 hover:scale-105"
             >
-             <b> Learn More</b>
+              <b>Learn More</b>
               <svg
                 className="w-5 h-5 ml-2 transition-transform group-hover:translate-y-1"
                 fill="none"
