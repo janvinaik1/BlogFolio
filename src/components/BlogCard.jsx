@@ -41,7 +41,9 @@ const BlogCard = ({ blog, onDelete, onEdit }) => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const cleanHtml = DOMPurify.sanitize(marked.parse(blog.content || ""));
+  const cleanHtml = DOMPurify.sanitize(marked.parse(blog.content || ""),{
+    FORBID_TAGS: ["img"], // Disallow <img> tags
+  });
 
   return (
     <div
