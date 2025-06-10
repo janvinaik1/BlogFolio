@@ -57,7 +57,7 @@ export default function PortfolioPage() {
       setHasPortfolio(false);
       setPortfolio(null);
       setShowDeleteConfirm(false);
-      navigate("/"); // Redirect after delete
+      navigate(`/blog/portfolio/${id}`); 
     } catch (err) {
       setError("Failed to delete portfolio. Please try again.");
       console.error("Error deleting portfolio:", err);

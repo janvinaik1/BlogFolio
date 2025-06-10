@@ -10,6 +10,7 @@ import ExperienceForm from "../components/create_portfolio/Exprience";
 
 const CreatePortfolioForm = () => {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     title: "",
@@ -25,7 +26,7 @@ const CreatePortfolioForm = () => {
         techStack: [""],
         githubLink: "",
         liveDemo: "",
-        image: "",
+        image: "", // File object expected
       },
     ],
     experience: [{ company: "", position: "", duration: "", description: "" }],
@@ -43,13 +44,21 @@ const CreatePortfolioForm = () => {
   const [activeSection, setActiveSection] = useState("basic");
 
   const handleChange = (e, index, key, type, isArray = false) => {
-    const { value } = e.target;
+    const isFile = e.target.type === "file";
+    const value = isFile ? e.target.files[0] : e.target.value;
     const updated = [...formData[type]];
-    if (isArray) {
+
+    if (isFile) {
+      updated[index][key] = value;
+      if (key === "image") {
+        updated[index]["imagePreview"] = URL.createObjectURL(value);
+      }
+    } else if (isArray) {
       updated[index][key] = value.split(",").map((item) => item.trim());
     } else {
       updated[index][key] = value;
     }
+
     setFormData({ ...formData, [type]: updated });
   };
 
@@ -82,9 +91,9 @@ const CreatePortfolioForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
-
     if (!storedUser) {
       setError("User not found. Please log in again.");
       return;
@@ -92,48 +101,73 @@ const CreatePortfolioForm = () => {
 
     const user = JSON.parse(storedUser);
     const userId = user.id;
+
     try {
-      const portfolioData = {
-        ...formData,
+      const formPayload = new FormData();
 
-        socialLinks: Array.isArray(formData.socialLinks)
-          ? formData.socialLinks.filter(
-              (link) => link.platform?.trim() && link.link?.trim()
-            )
-          : [],
+      formPayload.append("name", formData.name);
+      formPayload.append("title", formData.title);
+      formPayload.append("bio", formData.bio);
+      formPayload.append("contactEmail", formData.contactEmail);
 
-        skills: Array.isArray(formData.skills)
-          ? formData.skills.filter((skill) => skill.name?.trim())
-          : [],
+      if (formData.avatar instanceof File) {
+        formPayload.append("avatar", formData.avatar);
+      }
 
-        projects: Array.isArray(formData.projects)
-          ? formData.projects.filter((project) => project.title?.trim())
-          : [],
+      if (formData.contact) {
+        formPayload.append("contact[email]", formData.contact.email);
+        formPayload.append("contact[phone]", formData.contact.phone);
+        formPayload.append("contact[website]", formData.contact.website);
+        formPayload.append("contact[address]", formData.contact.address);
+      }
 
-        experience: Array.isArray(formData.experience)
-          ? formData.experience.filter((exp) => exp.company?.trim())
-          : [],
+      formData.skills.forEach((skill, i) => {
+        formPayload.append(`skills[${i}][name]`, skill.name);
+        formPayload.append(`skills[${i}][level]`, skill.level);
+      });
 
-        education: Array.isArray(formData.education)
-          ? formData.education.filter((edu) => edu.school?.trim())
-          : [],
+      formData.projects.forEach((project, i) => {
+        formPayload.append(`projects[${i}][title]`, project.title);
+        formPayload.append(`projects[${i}][description]`, project.description);
+        formPayload.append(`projects[${i}][githubLink]`, project.githubLink);
+        formPayload.append(`projects[${i}][liveDemo]`, project.liveDemo);
 
-        contact: Array.isArray(formData.contact)
-          ? formData.contact.filter(
-              (contact) =>
-                contact.phone?.trim() ||
-                contact.address?.trim() ||
-                contact.website?.trim() ||
-                contact.email?.trim()
-            )
-          : [],
+        project.techStack.forEach((tech, j) => {
+          formPayload.append(`projects[${i}][techStack][${j}]`, tech);
+        });
 
-        showBlogs: formData.wantsBlog === true,
-      };
+        if (project.image instanceof File) {
+          formPayload.append("image", project.image);
+        }
+      });
 
-      
-      await portfolioService.createPortfolio(portfolioData, token, userId);
-      navigate(`/view/portfolio/${userId}`);
+      formData.experience.forEach((exp, i) => {
+        formPayload.append(`experience[${i}][company]`, exp.company);
+        formPayload.append(`experience[${i}][position]`, exp.position);
+        formPayload.append(`experience[${i}][duration]`, exp.duration);
+        formPayload.append(`experience[${i}][description]`, exp.description);
+      });
+
+      formData.education.forEach((edu, i) => {
+        formPayload.append(`education[${i}][school]`, edu.school);
+        formPayload.append(`education[${i}][degree]`, edu.degree);
+        formPayload.append(`education[${i}][year]`, edu.year);
+        formPayload.append(`education[${i}][description]`, edu.description);
+      });
+
+      formData.socialLinks.forEach((link, i) => {
+        formPayload.append(`socialLinks[${i}][platform]`, link.platform);
+        formPayload.append(`socialLinks[${i}][link]`, link.link);
+      });
+
+      formPayload.append("showBlogs", formData.wantsBlog);
+
+      for (let pair of formPayload.entries()) {
+        console.log(`${pair[0]}:`, pair[1]);
+      }
+
+      await portfolioService.createPortfolio(formPayload, token, userId);
+      // navigate(`/view/portfolio/${userId}`);
     } catch (error) {
       console.error("Error creating portfolio:", error);
       setError("Failed to create portfolio. Please try again.");
@@ -161,7 +195,6 @@ const CreatePortfolioForm = () => {
         </div>
 
         <div className="flex flex-col md:flex-row">
-          {/* Navigation Sidebar */}
           <div className="w-full md:w-64 bg-gray-900 p-4">
             <div className="sticky top-0">
               <ul>
@@ -193,20 +226,15 @@ const CreatePortfolioForm = () => {
           </div>
 
           <div className="flex-1 bg-gray-800 p-8">
-            <form
-              id="portfolio-form"
-              onSubmit={handleSubmit}
-              className="space-y-8"
-            >
-              {/* BASIC INFO */}
+            <form id="portfolio-form" onSubmit={handleSubmit} className="space-y-8">
               {activeSection === "basic" && (
                 <BasicInfoForm
                   formData={formData}
+                  setFormData={setFormData}
                   handleSimpleChange={handleSimpleChange}
                 />
               )}
 
-              {/* CONTACT INFO */}
               {activeSection === "contact" && (
                 <ContactAndSocialForm
                   formData={formData}
@@ -217,7 +245,6 @@ const CreatePortfolioForm = () => {
                 />
               )}
 
-              {/* SKILLS */}
               <SkillsSection
                 activeSection={activeSection}
                 formData={formData}
@@ -225,7 +252,7 @@ const CreatePortfolioForm = () => {
                 addField={addField}
                 removeField={removeField}
               />
-              {/* Projects*/}
+
               <ProjectsSection
                 activeSection={activeSection}
                 formData={formData}
@@ -249,6 +276,7 @@ const CreatePortfolioForm = () => {
                 removeField={removeField}
                 isActive={activeSection === "education"}
               />
+
               {activeSection === "blogs" && (
                 <div className="bg-gray-750 rounded-xl p-6 border border-gray-700 mb-6">
                   <h3 className="text-xl font-semibold text-white mb-4">

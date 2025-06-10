@@ -1,12 +1,35 @@
-import React from "react";
+import { useState, useEffect } from "react";
 
-const BasicInfoForm = ({ formData, handleSimpleChange }) => {
+const BasicInfoForm = ({ formData, handleSimpleChange, setFormData }) => {
+  const [avatarPreview, setAvatarPreview] = useState(
+    formData.avatar && typeof formData.avatar === "string" ? formData.avatar : ""
+  );
+
+  useEffect(() => {
+    if (formData.avatar && typeof formData.avatar === "string") {
+      setAvatarPreview(formData.avatar);
+    }
+  }, [formData.avatar]);
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setAvatarPreview(url);
+      setFormData((prev) => ({
+        ...prev,
+        avatar: file,
+      }));
+    }
+  };
+
   return (
     <div className="bg-gray-750 rounded-xl p-6 border border-gray-700">
       <h3 className="text-xl font-semibold text-white mb-4">
         Personal Information
       </h3>
       <div className="space-y-4">
+        {/* Name and Title */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-gray-300 mb-1 text-sm">
@@ -34,6 +57,7 @@ const BasicInfoForm = ({ formData, handleSimpleChange }) => {
           </div>
         </div>
 
+        {/* Email and Avatar */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-gray-300 mb-1 text-sm">
@@ -47,20 +71,28 @@ const BasicInfoForm = ({ formData, handleSimpleChange }) => {
               className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
+
           <div>
             <label className="block text-gray-300 mb-1 text-sm">
-              Avatar URL
+              Upload Avatar
             </label>
             <input
-              name="avatar"
-              value={formData.avatar}
-              onChange={handleSimpleChange}
-              placeholder="https://example.com/avatar.jpg"
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="w-full text-sm text-white bg-gray-700 rounded-lg border border-gray-600 file:bg-blue-500 file:text-white file:px-3 file:py-1 file:rounded file:border-none"
             />
+            {avatarPreview && avatarPreview.trim() !== "" && (
+              <img
+                src={avatarPreview}
+                alt="Avatar Preview"
+                className="mt-2 w-20 h-20 object-cover rounded-full border border-gray-500"
+              />
+            )}
           </div>
         </div>
 
+        {/* Bio */}
         <div>
           <label className="block text-gray-300 mb-1 text-sm">Bio</label>
           <textarea

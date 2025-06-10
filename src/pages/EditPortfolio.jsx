@@ -47,9 +47,7 @@ const EditPortfolioForm = () => {
   useEffect(() => {
     const fetchPortfolio = async () => {
       try {
-        const { hasPortfolio, portfolio } = await portfolioService.getPortfolio(
-          id
-        );
+        const { hasPortfolio, portfolio } = await portfolioService.getPortfolio(id);
         if (hasPortfolio && portfolio) {
           setFormData(portfolio);
         } else {
@@ -61,6 +59,11 @@ const EditPortfolioForm = () => {
     };
     fetchPortfolio();
   }, [id]);
+
+  const handleSimpleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleChange = (e, index, key, type, isArray = false) => {
     const { value } = e.target;
@@ -75,22 +78,20 @@ const EditPortfolioForm = () => {
 
   const handleContactChange = (e, key) => {
     const { value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
+    setFormData((prev) => ({
+      ...prev,
       contact: {
-        ...prevFormData.contact,
+        ...prev.contact,
         [key]: value,
       },
     }));
   };
 
-  const handleSimpleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
   const addField = (type, newItem) => {
-    setFormData({ ...formData, [type]: [...formData[type], newItem] });
+    setFormData((prev) => ({
+      ...prev,
+      [type]: [...prev[type], newItem],
+    }));
   };
 
   const removeField = (type, index) => {
@@ -110,7 +111,6 @@ const EditPortfolioForm = () => {
     }
 
     try {
-      // Clean up data before submitting
       const portfolioData = {
         ...formData,
 
@@ -136,15 +136,12 @@ const EditPortfolioForm = () => {
           ? formData.education.filter((edu) => edu.school?.trim())
           : [],
 
-        contact: Array.isArray(formData.contact)
-          ? formData.contact.filter(
-              (contact) =>
-                contact.phone?.trim() ||
-                contact.address?.trim() ||
-                contact.website?.trim() ||
-                contact.email?.trim()
-            )
-          : [],
+        contact: {
+          email: formData.contact.email?.trim(),
+          phone: formData.contact.phone?.trim(),
+          website: formData.contact.website?.trim(),
+          address: formData.contact.address?.trim(),
+        },
 
         showBlogs: formData.wantsBlog === true,
       };
@@ -177,7 +174,7 @@ const EditPortfolioForm = () => {
         </div>
 
         <div className="flex flex-col md:flex-row">
-          {/* Navigation Sidebar */}
+          {/* Sidebar */}
           <div className="w-full md:w-64 bg-gray-900 p-4">
             <div className="sticky top-0">
               <ul>
@@ -208,14 +205,9 @@ const EditPortfolioForm = () => {
             </div>
           </div>
 
-          {/* Main Form Content */}
+          {/* Main Form */}
           <div className="flex-1 bg-gray-800 p-8">
-            <form
-              id="portfolio-form"
-              onSubmit={handleSubmit}
-              className="space-y-8"
-            >
-              {/* BASIC INFO */}
+            <form id="portfolio-form" onSubmit={handleSubmit} className="space-y-8">
               {activeSection === "basic" && (
                 <BasicInfoForm
                   formData={formData}
@@ -223,7 +215,6 @@ const EditPortfolioForm = () => {
                 />
               )}
 
-              {/* CONTACT INFO */}
               {activeSection === "contact" && (
                 <ContactAndSocialForm
                   formData={formData}
@@ -234,7 +225,6 @@ const EditPortfolioForm = () => {
                 />
               )}
 
-              {/* SKILLS */}
               <SkillsSection
                 activeSection={activeSection}
                 formData={formData}
@@ -243,7 +233,6 @@ const EditPortfolioForm = () => {
                 removeField={removeField}
               />
 
-              {/* PROJECTS */}
               <ProjectsSection
                 activeSection={activeSection}
                 formData={formData}
@@ -252,7 +241,6 @@ const EditPortfolioForm = () => {
                 removeField={removeField}
               />
 
-              {/* EXPERIENCE */}
               <ExperienceForm
                 experience={formData.experience}
                 handleChange={handleChange}
@@ -261,7 +249,6 @@ const EditPortfolioForm = () => {
                 isActive={activeSection === "experience"}
               />
 
-              {/* EDUCATION */}
               <EducationForm
                 education={formData.education}
                 handleChange={handleChange}
@@ -270,7 +257,6 @@ const EditPortfolioForm = () => {
                 isActive={activeSection === "education"}
               />
 
-              {/* BLOGS */}
               {activeSection === "blogs" && (
                 <div className="bg-gray-750 rounded-xl p-6 border border-gray-700 mb-6">
                   <h3 className="text-xl font-semibold text-white mb-4">
@@ -281,11 +267,9 @@ const EditPortfolioForm = () => {
                       <input
                         type="radio"
                         name="wantsBlog"
-                        value={true}
+                        value="true"
                         checked={formData.wantsBlog === true}
-                        onChange={() =>
-                          setFormData({ ...formData, wantsBlog: true })
-                        }
+                        onChange={() => setFormData({ ...formData, wantsBlog: true })}
                         className="form-radio text-blue-500 bg-gray-700 border-gray-600"
                       />
                       <span className="ml-2 text-white">Yes</span>
@@ -294,11 +278,9 @@ const EditPortfolioForm = () => {
                       <input
                         type="radio"
                         name="wantsBlog"
-                        value={false}
+                        value="false"
                         checked={formData.wantsBlog === false}
-                        onChange={() =>
-                          setFormData({ ...formData, wantsBlog: false })
-                        }
+                        onChange={() => setFormData({ ...formData, wantsBlog: false })}
                         className="form-radio text-blue-500 bg-gray-700 border-gray-600"
                       />
                       <span className="ml-2 text-white">No</span>

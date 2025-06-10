@@ -7,9 +7,9 @@ const baseURL = isLocalhost
 
 const baseConfig = {
     baseURL: baseURL,
-    headers: {
-       "content-type": "application/json" 
-    }
+    // headers: {
+    //    "content-type": "application/json" 
+    // }
 }
 
 const axiosInstance = axios.create(baseConfig)

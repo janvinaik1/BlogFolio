@@ -7,16 +7,17 @@ import {
   FaGlobe,
 } from "react-icons/fa";
 
-// Utility function to map URLs to social icons
-const getIconForPlatform = (url) => {
-  if (url.includes("github.com")) return <FaGithub />;
-  if (url.includes("linkedin.com")) return <FaLinkedin />;
-  if (url.includes("twitter.com")) return <FaTwitter />;
-  if (url.includes("instagram.com")) return <FaInstagram />;
+// Icons mapped from URL
+const getIconForPlatform = (url = "") => {
+  const domain = url.toLowerCase();
+  if (domain.includes("github.com")) return <FaGithub />;
+  if (domain.includes("linkedin.com")) return <FaLinkedin />;
+  if (domain.includes("twitter.com")) return <FaTwitter />;
+  if (domain.includes("instagram.com")) return <FaInstagram />;
   return <FaGlobe />;
 };
 
-// Animation variants for reusability
+// Animation Variants
 const containerVariants = {
   hidden: { opacity: 0, y: 100 },
   visible: {
@@ -31,14 +32,14 @@ const avatarVariants = {
   visible: { opacity: 1, scale: 1, transition: { duration: 0.8, delay: 0.4 } },
 };
 
-const textVariants = {
+const getTextVariants = (delay = 0) => ({
   hidden: { opacity: 0, x: -50 },
-  visible: (delay) => ({
+  visible: {
     opacity: 1,
     x: 0,
     transition: { duration: 0.8, delay, ease: "easeOut" },
-  }),
-};
+  },
+});
 
 const scrollIndicatorVariants = {
   animate: {
@@ -48,7 +49,7 @@ const scrollIndicatorVariants = {
   },
 };
 
-// Avatar component
+// Avatar
 const Avatar = ({ src, alt }) => (
   <motion.div
     className="mb-10 sm:mb-12 md:mb-0 md:mr-12 lg:mr-16 flex-shrink-0"
@@ -64,8 +65,8 @@ const Avatar = ({ src, alt }) => (
   </motion.div>
 );
 
-// Name animation component
-const AnimatedName = ({ name }) => (
+// Animated Name
+const AnimatedName = ({ name = "" }) => (
   <span className="text-purple-400 inline-block">
     {name.split("").map((char, i) => (
       <motion.span
@@ -85,8 +86,8 @@ const AnimatedName = ({ name }) => (
   </span>
 );
 
-// Social links component
-const SocialLinks = ({ socialLinks }) => (
+// Social Links
+const SocialLinks = ({ socialLinks = [] }) => (
   <motion.div
     className="flex gap-4 sm:gap-5 justify-center md:justify-start mb-6 sm:mb-8"
     initial={{ opacity: 0, y: 20 }}
@@ -108,10 +109,9 @@ const SocialLinks = ({ socialLinks }) => (
   </motion.div>
 );
 
-// Action buttons component
+// Action Buttons
 const ActionButtons = ({ portfolio, scrollToContact }) => {
-  const blogLink = `https://personal-blog-portfolio-frontend.vercel.app/public/home?authorId=${portfolio.user._id}`;
-  console.log("HELLOOO:",portfolio.user._id);
+  const blogLink = `https://personal-blog-portfolio-frontend.vercel.app/public/home?authorId=${portfolio?.user?._id}`;
 
   return (
     <motion.div
@@ -120,7 +120,7 @@ const ActionButtons = ({ portfolio, scrollToContact }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 1.4 }}
     >
-      {portfolio.showBlogs && (
+      {portfolio?.showBlogs && (
         <a
           href={blogLink}
           target="_blank"
@@ -140,7 +140,7 @@ const ActionButtons = ({ portfolio, scrollToContact }) => {
   );
 };
 
-// Scroll indicator component
+// Scroll Indicator
 const ScrollIndicator = () => (
   <motion.div
     className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-10 text-gray-300"
@@ -159,8 +159,8 @@ const ScrollIndicator = () => (
   </motion.div>
 );
 
-// Main component
-const BasicInfoView = ({ portfolio }) => {
+// Main Component
+const BasicInfoView = ({ portfolio = {} }) => {
   const scrollToContact = () => {
     const contactSection = document.getElementById("contact");
     if (contactSection) {
@@ -169,39 +169,36 @@ const BasicInfoView = ({ portfolio }) => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center text-white overflow-hidden ">
+    <section className="relative min-h-screen flex items-center justify-center text-white overflow-hidden">
       <motion.div
         className="relative z-10 flex flex-col md:flex-row items-center justify-center w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <Avatar src={portfolio.avatar} alt={portfolio.name} />
+        <Avatar src={portfolio.avatar} alt={portfolio.name || "Avatar"} />
         <div className="text-center md:text-left max-w-md sm:max-w-lg md:max-w-xl">
           <motion.h1
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight tracking-tight drop-shadow-lg"
-            variants={textVariants}
+            variants={getTextVariants(0.6)}
             initial="hidden"
             animate="visible"
-            custom={0.6}
           >
             Hey, I'm <AnimatedName name={portfolio.name} />
           </motion.h1>
           <motion.h2
             className="text-lg sm:text-xl md:text-2xl text-pink-300 mb-4 sm:mb-6 font-medium tracking-wide"
-            variants={textVariants}
+            variants={getTextVariants(0.8)}
             initial="hidden"
             animate="visible"
-            custom={0.8}
           >
             {portfolio.title}
           </motion.h2>
           <motion.p
             className="text-sm sm:text-base md:text-lg text-gray-200 leading-relaxed mb-6 sm:mb-8 max-w-prose"
-            variants={textVariants}
+            variants={getTextVariants(1.0)}
             initial="hidden"
             animate="visible"
-            custom={1.0}
           >
             {portfolio.bio}
           </motion.p>

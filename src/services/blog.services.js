@@ -39,9 +39,14 @@ const blogService = {
     }
   },
 
-  editPost: async (id, updatedData) => {
+  editPost: async (id, updatedData,token) => {
     try {
-      const response = await axiosInstance.put(`/blog/${id}`, updatedData);
+      const response = await axiosInstance.put(`/blog/${id}`, updatedData,{
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
       return response.data;
     } catch (error) {
       console.error("Error editing blog:", error);
