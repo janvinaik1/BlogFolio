@@ -1,4 +1,3 @@
-
 import axiosInstance from "../../axios.config";
 
 const blogService = {
@@ -26,27 +25,43 @@ const blogService = {
     }
   },
 
-  createBlog: async (blogData,token) => {
+  addCommentToBlog: async (id, commentData) => {
+    const response = await axiosInstance.post(
+      `blog/${id}/comments`,
+      commentData
+    );
+    return response.data;
+  },
+
+  deleteCommentFromBlog: async (id,commentId) => {
     try {
-      const response = await axiosInstance.post("/blog/create", blogData,{
-       headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      const response = await axiosInstance.delete(`/blog/${id}/comments/${commentId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+    }
+  },
+  createBlog: async (blogData, token) => {
+    try {
+      const response = await axiosInstance.post("/blog/create", blogData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       return error;
     }
   },
 
-  editPost: async (id, updatedData,token) => {
+  editPost: async (id, updatedData, token) => {
     try {
-      const response = await axiosInstance.put(`/blog/${id}`, updatedData,{
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
+      const response = await axiosInstance.put(`/blog/${id}`, updatedData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (error) {
       console.error("Error editing blog:", error);
@@ -63,17 +78,19 @@ const blogService = {
   },
 
   search: async (query, authorId) => {
-  try {
-    const params = new URLSearchParams();
-    if (query) params.set("s", query);
-    if (authorId) params.set("authorId", authorId);
+    try {
+      const params = new URLSearchParams();
+      if (query) params.set("s", query);
+      if (authorId) params.set("authorId", authorId);
 
-    const response = await axiosInstance.get(`/blog/search?${params.toString()}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error searching blog:", error);
-  }
-}
+      const response = await axiosInstance.get(
+        `/blog/search?${params.toString()}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error searching blog:", error);
+    }
+  },
 };
 
 export default blogService;
