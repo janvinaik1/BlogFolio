@@ -22,7 +22,7 @@ const blogService = {
           Authorization: `Bearer ${token}`,
         },
     });
-    console.log("API called")
+    
       return response.data;
       
     } catch (error) {
