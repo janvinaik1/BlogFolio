@@ -17,11 +17,13 @@ const BlogDetailPage = () => {
   const [shareDropdownOpen, setShareDropdownOpen] = useState(false);
   const [likedComments, setLikedComments] = useState(new Set());
   const [copied, setCopied] = useState(false);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await blogService.getBlogById(id);
+        console.log(" Fetching blog...");
+        const response = await blogService.getBlogById(id,token);
         setBlog(response);
         setComments(response.comments || []);
       } catch (err) {
@@ -56,16 +58,16 @@ const BlogDetailPage = () => {
     }
   };
 
-  const handleDeleteComment = async (id, commentId) => {
-    try {
-      await blogService.deleteCommentFromBlog(id, commentId);
-      setComments((prev) =>
-        prev.filter((comment) => comment._id !== commentId)
-      );
-    } catch (err) {
-      console.error("Failed to delete comment", err);
-    }
-  };
+  // const handleDeleteComment = async (id, commentId) => {
+  //   try {
+  //     await blogService.deleteCommentFromBlog(id, commentId);
+  //     setComments((prev) =>
+  //       prev.filter((comment) => comment._id !== commentId)
+  //     );
+  //   } catch (err) {
+  //     console.error("Failed to delete comment", err);
+  //   }
+  // };
 
   const handleShare = async (platform) => {
     const currentUrl = window.location.href;

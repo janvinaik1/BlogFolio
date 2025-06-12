@@ -16,10 +16,15 @@ const blogService = {
     }
   },
 
-  getBlogById: async (id) => {
+  getBlogById: async (id,token) => {
     try {
-      const response = await axiosInstance.get(`/blog/${id}`);
+      const response = await axiosInstance.get(`/blog/${id}`,{headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    });
+    console.log("API called")
       return response.data;
+      
     } catch (error) {
       console.error("Error fetching blog:", error);
     }
