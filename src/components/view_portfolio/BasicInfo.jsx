@@ -7,7 +7,7 @@ import {
   FaGlobe,
 } from "react-icons/fa";
 
-// Icons mapped from URL
+
 const getIconForPlatform = (url = "") => {
   const domain = url.toLowerCase();
   if (domain.includes("github.com")) return <FaGithub />;
@@ -50,20 +50,25 @@ const scrollIndicatorVariants = {
 };
 
 // Avatar
-const Avatar = ({ src, alt }) => (
-  <motion.div
-    className="mb-10 sm:mb-12 md:mb-0 md:mr-12 lg:mr-16 flex-shrink-0"
-    variants={avatarVariants}
-    initial="hidden"
-    animate="visible"
-  >
-    <img
-      src={src}
-      alt={alt}
-      className="w-48 h-48 sm:w-60 sm:h-60 md:w-72 md:h-72 rounded-full border-4 border-white shadow-2xl object-cover transform hover:scale-105 transition-transform duration-300"
-    />
-  </motion.div>
-);
+const Avatar = ({ src, alt }) => {
+  if (!src) return null;
+
+  return (
+    <motion.div
+      className="mb-10 sm:mb-12 md:mb-0 md:mr-12 lg:mr-16 flex-shrink-0"
+      variants={avatarVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <img
+        src={src}
+        alt={alt}
+        className="w-48 h-48 sm:w-60 sm:h-60 md:w-72 md:h-72 rounded-full border-4 border-white shadow-2xl object-cover transform hover:scale-105 transition-transform duration-300"
+      />
+    </motion.div>
+  );
+};
+
 
 // Animated Name
 const AnimatedName = ({ name = "" }) => (

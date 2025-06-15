@@ -89,90 +89,99 @@ const CreatePortfolioForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
+  e.preventDefault();
+  setError(null);
 
-    const token = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) {
-      setError("User not found. Please log in again.");
-      return;
+  const token = localStorage.getItem("token");
+  const storedUser = localStorage.getItem("user");
+  if (!storedUser) {
+    setError("User not found. Please log in again.");
+    return;
+  }
+
+  const user = JSON.parse(storedUser);
+  const userId = user.id;
+
+  try {
+    const formPayload = new FormData();
+
+    // Basic fields
+    formPayload.append("name", formData.name);
+    formPayload.append("title", formData.title);
+    formPayload.append("bio", formData.bio);
+    formPayload.append("contactEmail", formData.contactEmail);
+
+    // Avatar upload
+    if (formData.avatar instanceof File) {
+      formPayload.append("avatar", formData.avatar);
     }
 
-    const user = JSON.parse(storedUser);
-    const userId = user.id;
-
-    try {
-      const formPayload = new FormData();
-
-      formPayload.append("name", formData.name);
-      formPayload.append("title", formData.title);
-      formPayload.append("bio", formData.bio);
-      formPayload.append("contactEmail", formData.contactEmail);
-
-      if (formData.avatar instanceof File) {
-        formPayload.append("avatar", formData.avatar);
-      }
-
-      if (formData.contact) {
-        formPayload.append("contact[email]", formData.contact.email);
-        formPayload.append("contact[phone]", formData.contact.phone);
-        formPayload.append("contact[website]", formData.contact.website);
-        formPayload.append("contact[address]", formData.contact.address);
-      }
-
-      formData.skills.forEach((skill, i) => {
-        formPayload.append(`skills[${i}][name]`, skill.name);
-        formPayload.append(`skills[${i}][level]`, skill.level);
-      });
-
-      formData.projects.forEach((project, i) => {
-        formPayload.append(`projects[${i}][title]`, project.title);
-        formPayload.append(`projects[${i}][description]`, project.description);
-        formPayload.append(`projects[${i}][githubLink]`, project.githubLink);
-        formPayload.append(`projects[${i}][liveDemo]`, project.liveDemo);
-
-        project.techStack.forEach((tech, j) => {
-          formPayload.append(`projects[${i}][techStack][${j}]`, tech);
-        });
-
-        if (project.image instanceof File) {
-          formPayload.append("image", project.image);
-        }
-      });
-
-      formData.experience.forEach((exp, i) => {
-        formPayload.append(`experience[${i}][company]`, exp.company);
-        formPayload.append(`experience[${i}][position]`, exp.position);
-        formPayload.append(`experience[${i}][duration]`, exp.duration);
-        formPayload.append(`experience[${i}][description]`, exp.description);
-      });
-
-      formData.education.forEach((edu, i) => {
-        formPayload.append(`education[${i}][school]`, edu.school);
-        formPayload.append(`education[${i}][degree]`, edu.degree);
-        formPayload.append(`education[${i}][year]`, edu.year);
-        formPayload.append(`education[${i}][description]`, edu.description);
-      });
-
-      formData.socialLinks.forEach((link, i) => {
-        formPayload.append(`socialLinks[${i}][platform]`, link.platform);
-        formPayload.append(`socialLinks[${i}][link]`, link.link);
-      });
-
-      formPayload.append("showBlogs", formData.wantsBlog);
-
-      for (let pair of formPayload.entries()) {
-        console.log(`${pair[0]}:`, pair[1]);
-      }
-
-      await portfolioService.createPortfolio(formPayload, token, userId);
-      // navigate(`/view/portfolio/${userId}`);
-    } catch (error) {
-      console.error("Error creating portfolio:", error);
-      setError("Failed to create portfolio. Please try again.");
+    // Contact info
+    if (formData.contact) {
+      formPayload.append("contact[email]", formData.contact.email);
+      formPayload.append("contact[phone]", formData.contact.phone);
+      formPayload.append("contact[website]", formData.contact.website);
+      formPayload.append("contact[address]", formData.contact.address);
     }
-  };
+
+    // Skills
+    formData.skills.forEach((skill, i) => {
+      formPayload.append(`skills[${i}][name]`, skill.name);
+      formPayload.append(`skills[${i}][level]`, skill.level);
+    });
+
+    // Clean project metadata for JSON
+    const cleanedProjects = formData.projects.map(({ image, imagePreview, ...rest }) => rest);
+
+    // Append project images separately
+    formData.projects.forEach((project,index) => {
+      if (project.image instanceof File) {
+        formPayload.append(`projects[${index}][image]`, project.image);
+      }
+    });
+
+    // Append cleaned JSON string
+    formPayload.append("projects", JSON.stringify(cleanedProjects));
+
+    // Experience
+    formData.experience.forEach((exp, i) => {
+      formPayload.append(`experience[${i}][company]`, exp.company);
+      formPayload.append(`experience[${i}][position]`, exp.position);
+      formPayload.append(`experience[${i}][duration]`, exp.duration);
+      formPayload.append(`experience[${i}][description]`, exp.description);
+    });
+
+    // Education
+    formData.education.forEach((edu, i) => {
+      formPayload.append(`education[${i}][school]`, edu.school);
+      formPayload.append(`education[${i}][degree]`, edu.degree);
+      formPayload.append(`education[${i}][year]`, edu.year);
+      formPayload.append(`education[${i}][description]`, edu.description);
+    });
+
+    // Social Links
+    formData.socialLinks.forEach((link, i) => {
+      formPayload.append(`socialLinks[${i}][platform]`, link.platform);
+      formPayload.append(`socialLinks[${i}][link]`, link.link);
+    });
+
+    // Blog preference
+    formPayload.append("showBlogs", formData.wantsBlog);
+
+    // Debug: log keys
+    for (let pair of formPayload.entries()) {
+      console.log(`${pair[0]}:`, pair[1]);
+    }
+
+    // Send to backend
+    await portfolioService.createPortfolio(formPayload, token, userId);
+    navigate(`/view/portfolio/${userId}`);
+  } catch (error) {
+    console.error("Error creating portfolio:", error);
+    setError("Failed to create portfolio. Please try again.");
+  }
+};
+
 
   const sections = [
     { id: "basic", name: "Basic Info" },
@@ -226,7 +235,11 @@ const CreatePortfolioForm = () => {
           </div>
 
           <div className="flex-1 bg-gray-800 p-8">
-            <form id="portfolio-form" onSubmit={handleSubmit} className="space-y-8">
+            <form
+              id="portfolio-form"
+              onSubmit={handleSubmit}
+              className="space-y-8"
+            >
               {activeSection === "basic" && (
                 <BasicInfoForm
                   formData={formData}

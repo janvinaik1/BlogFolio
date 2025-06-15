@@ -150,7 +150,7 @@ const HomePage = () => {
   }
 
   return (
-    <div className="bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 min-h-screen text-white">
+    <div className="bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 min-h-full text-white">
       <div className="max-w-5xl mx-auto px-4 py-10">
         {initialSearch && (
           <div className="mb-4">

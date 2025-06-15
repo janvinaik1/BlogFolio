@@ -518,6 +518,7 @@ const BlogDetailPage = () => {
                   <p className="text-gray-900 font-medium">
                     Written by {blog.author?.username}
                   </p>
+                  
                   <p className="text-gray-600 text-sm">
                     Thank you for reading!
                   </p>

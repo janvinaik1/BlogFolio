@@ -66,13 +66,21 @@ const EditPortfolioForm = () => {
   };
 
   const handleChange = (e, index, key, type, isArray = false) => {
-    const { value } = e.target;
+    const isFile = e.target.type === "file";
+    const value = isFile ? e.target.files[0] : e.target.value;
     const updated = [...formData[type]];
-    if (isArray) {
+
+    if (isFile) {
+      updated[index][key] = value;
+      if (key === "image") {
+        updated[index]["imagePreview"] = URL.createObjectURL(value);
+      }
+    } else if (isArray) {
       updated[index][key] = value.split(",").map((item) => item.trim());
     } else {
       updated[index][key] = value;
     }
+
     setFormData({ ...formData, [type]: updated });
   };
 
@@ -111,42 +119,126 @@ const EditPortfolioForm = () => {
     }
 
     try {
-      const portfolioData = {
-        ...formData,
+      // Check if there are any file uploads
+      const hasFileUploads = 
+        (formData.avatar instanceof File) ||
+        formData.projects.some(project => project.image instanceof File);
 
-        socialLinks: Array.isArray(formData.socialLinks)
-          ? formData.socialLinks.filter(
-              (link) => link.platform?.trim() && link.link?.trim()
-            )
-          : [],
+      if (hasFileUploads) {
+        // Use FormData for file uploads
+        const formPayload = new FormData();
 
-        skills: Array.isArray(formData.skills)
-          ? formData.skills.filter((skill) => skill.name?.trim())
-          : [],
+        // Basic fields
+        formPayload.append("name", formData.name);
+        formPayload.append("title", formData.title);
+        formPayload.append("bio", formData.bio);
+        formPayload.append("contactEmail", formData.contactEmail);
 
-        projects: Array.isArray(formData.projects)
-          ? formData.projects.filter((project) => project.title?.trim())
-          : [],
+        // Avatar upload
+        if (formData.avatar instanceof File) {
+          formPayload.append("avatar", formData.avatar);
+        } else if (typeof formData.avatar === "string") {
+          formPayload.append("avatar", formData.avatar);
+        }
 
-        experience: Array.isArray(formData.experience)
-          ? formData.experience.filter((exp) => exp.company?.trim())
-          : [],
+        // Contact info
+        if (formData.contact) {
+          formPayload.append("contact[email]", formData.contact.email || "");
+          formPayload.append("contact[phone]", formData.contact.phone || "");
+          formPayload.append("contact[website]", formData.contact.website || "");
+          formPayload.append("contact[address]", formData.contact.address || "");
+        }
 
-        education: Array.isArray(formData.education)
-          ? formData.education.filter((edu) => edu.school?.trim())
-          : [],
+        // Skills
+        formData.skills.forEach((skill, i) => {
+          if (skill.name?.trim()) {
+            formPayload.append(`skills[${i}][name]`, skill.name);
+            formPayload.append(`skills[${i}][level]`, skill.level);
+          }
+        });
 
-        contact: {
-          email: formData.contact.email?.trim(),
-          phone: formData.contact.phone?.trim(),
-          website: formData.contact.website?.trim(),
-          address: formData.contact.address?.trim(),
-        },
+        // Clean project metadata for JSON
+        const cleanedProjects = formData.projects
+          .filter(project => project.title?.trim())
+          .map(({ image, imagePreview, ...rest }) => rest);
 
-        showBlogs: formData.wantsBlog === true,
-      };
+        // Append project images separately with indexed field names
+        let projectImageIndex = 0;
+        formData.projects.forEach((project, index) => {
+          if (project.image instanceof File) {
+            formPayload.append(`projects[${projectImageIndex}][image]`, project.image);
+            projectImageIndex++;
+          }
+        });
 
-      await portfolioService.updatePortfolio(id, portfolioData, token);
+        // Append cleaned JSON string
+        formPayload.append("projects", JSON.stringify(cleanedProjects));
+
+        // Experience
+        formData.experience.forEach((exp, i) => {
+          if (exp.company?.trim()) {
+            formPayload.append(`experience[${i}][company]`, exp.company);
+            formPayload.append(`experience[${i}][position]`, exp.position);
+            formPayload.append(`experience[${i}][duration]`, exp.duration);
+            formPayload.append(`experience[${i}][description]`, exp.description);
+          }
+        });
+
+        // Education
+        formData.education.forEach((edu, i) => {
+          if (edu.school?.trim()) {
+            formPayload.append(`education[${i}][school]`, edu.school);
+            formPayload.append(`education[${i}][degree]`, edu.degree);
+            formPayload.append(`education[${i}][year]`, edu.year);
+            formPayload.append(`education[${i}][description]`, edu.description);
+          }
+        });
+
+        // Social Links
+        formData.socialLinks.forEach((link, i) => {
+          if (link.platform?.trim() && link.link?.trim()) {
+            formPayload.append(`socialLinks[${i}][platform]`, link.platform);
+            formPayload.append(`socialLinks[${i}][link]`, link.link);
+          }
+        });
+
+        // Blog preference
+        formPayload.append("wantsBlog", formData.wantsBlog);
+
+        await portfolioService.updatePortfolio(id, formPayload, token);
+      } else {
+        // Use regular JSON payload when no files
+        const portfolioData = {
+          ...formData,
+          socialLinks: Array.isArray(formData.socialLinks)
+            ? formData.socialLinks.filter(
+                (link) => link.platform?.trim() && link.link?.trim()
+              )
+            : [],
+          skills: Array.isArray(formData.skills)
+            ? formData.skills.filter((skill) => skill.name?.trim())
+            : [],
+          projects: Array.isArray(formData.projects)
+            ? formData.projects.filter((project) => project.title?.trim())
+            : [],
+          experience: Array.isArray(formData.experience)
+            ? formData.experience.filter((exp) => exp.company?.trim())
+            : [],
+          education: Array.isArray(formData.education)
+            ? formData.education.filter((edu) => edu.school?.trim())
+            : [],
+          contact: {
+            email: formData.contact.email?.trim() || "",
+            phone: formData.contact.phone?.trim() || "",
+            website: formData.contact.website?.trim() || "",
+            address: formData.contact.address?.trim() || "",
+          },
+          showBlogs: formData.wantsBlog === true,
+        };
+
+        await portfolioService.updatePortfolio(id, portfolioData, token);
+      }
+
       navigate(`/view/portfolio/${id}`);
     } catch (err) {
       console.error("Error updating portfolio:", err);
@@ -211,6 +303,7 @@ const EditPortfolioForm = () => {
               {activeSection === "basic" && (
                 <BasicInfoForm
                   formData={formData}
+                  setFormData={setFormData}
                   handleSimpleChange={handleSimpleChange}
                 />
               )}

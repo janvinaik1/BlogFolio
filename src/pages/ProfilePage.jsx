@@ -129,8 +129,6 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
-
-      {/* 👋 Wave animation style */}
       <style>
         {`
           @keyframes wave {

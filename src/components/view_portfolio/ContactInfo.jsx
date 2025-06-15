@@ -58,13 +58,14 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
     Website: FaGlobe,
   };
 
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="grid md:grid-cols-2 gap-6">
         {/* Contact Section */}
         <div className="bg-gradient-to-br from-slate-900/50 to-slate-800/30 backdrop-blur-sm border border-white/10 rounded-xl shadow-xl overflow-hidden">
           <div className="px-6 py-4 border-b border-white/10">
-            <motion.h2 
+            <motion.h2
               className="text-lg font-semibold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -109,7 +110,9 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
                                 <a
                                   href={getContactAction(key, value)}
                                   className="text-white text-sm hover:text-emerald-300 transition-colors duration-300 break-all"
-                                  target={key === "website" ? "_blank" : undefined}
+                                  target={
+                                    key === "website" ? "_blank" : undefined
+                                  }
                                   rel="noopener noreferrer"
                                 >
                                   {key === "phone" ? formatPhone(value) : value}
@@ -126,7 +129,9 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
                           </div>
 
                           <motion.button
-                            onClick={() => copyToClipboard(value, `${key}-${idx}`)}
+                            onClick={() =>
+                              copyToClipboard(value, `${key}-${idx}`)
+                            }
                             className="p-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/20 transition-all duration-300 opacity-0 group-hover:opacity-100"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
@@ -180,7 +185,7 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
         {/* Social Links Section */}
         <div className="bg-gradient-to-br from-slate-900/50 to-slate-800/30 backdrop-blur-sm border border-white/10 rounded-xl shadow-xl overflow-hidden">
           <div className="px-6 py-4 border-b border-white/10">
-            <motion.h2 
+            <motion.h2
               className="text-lg font-semibold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -208,7 +213,7 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
                     {socialIcons[link.platform] && (
                       <div className="bg-emerald-500/20 border border-emerald-400/30 p-2 rounded-lg">
                         {React.createElement(socialIcons[link.platform], {
-                          className: "text-emerald-400 text-sm"
+                          className: "text-emerald-400 text-sm",
                         })}
                       </div>
                     )}
@@ -241,4 +246,3 @@ const ContactAndSocialView = ({ contact = [], socialLinks = [] }) => {
   );
 };
 export default ContactAndSocialView;
-// Demo data for testing

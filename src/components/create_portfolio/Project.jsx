@@ -5,6 +5,7 @@ const ProjectsSection = ({ activeSection, formData, handleChange, addField, remo
     const file = e.target.files[0];
     if (file) {
       const objectUrl = URL.createObjectURL(file);
+       console.log("Uploading file for project:", idx, file);
       handleChange({ target: { value: file } }, idx, "image", "projects");
       handleChange({ target: { value: objectUrl } }, idx, "imagePreview", "projects");
     }

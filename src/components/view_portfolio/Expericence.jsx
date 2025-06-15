@@ -238,7 +238,7 @@ const ExperienceView = ({ experience = [] }) => {
           ))}
 
           <motion.div
-            className="flex justify-center md:justify-center justify-start md:ml-0 ml-2 mt-6"
+            className="flex justify-center md:justify-center md:ml-0 ml-2 mt-6"
             initial={{ opacity: 0, scale: 0 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: sortedExperience.length * 0.1, type: "spring", stiffness: 150 }}
