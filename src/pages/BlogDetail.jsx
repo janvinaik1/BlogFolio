@@ -23,7 +23,7 @@ const BlogDetailPage = () => {
     const fetchBlog = async () => {
       try {
         console.log(" Fetching blog...");
-        const response = await blogService.getBlogById(id,token);
+        const response = await blogService.getBlogById(id, token);
         setBlog(response);
         setComments(response.comments || []);
       } catch (err) {
@@ -55,6 +55,11 @@ const BlogDetailPage = () => {
     } catch (err) {
       console.error("Failed to add comment:", err);
       alert("Error adding comment");
+    }
+  };
+  const handleAuthorClick = () => {
+    if (blog.author?._id) {
+      navigate(`/public/view/portfolio/${blog.author._id.toString()}`);
     }
   };
 
@@ -515,10 +520,13 @@ const BlogDetailPage = () => {
                   </span>
                 </div>
                 <div>
-                  <p className="text-gray-900 font-medium">
+                  <p
+                    className="text-gray-900 font-medium cursor-pointer hover:underline"
+                    onClick={handleAuthorClick}
+                  >
                     Written by {blog.author?.username}
                   </p>
-                  
+
                   <p className="text-gray-600 text-sm">
                     Thank you for reading!
                   </p>
