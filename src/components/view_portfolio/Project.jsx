@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { FaGithub, FaExternalLinkAlt } from "react-icons/fa";
 
-const ProjectsView = ({ projects = [] }) => {
+const ProjectsView = ({ projects = [], onViewDetails }) => {
   if (projects.length === 0)
     return <p className="text-gray-400">No projects added yet.</p>;
 
@@ -12,7 +12,7 @@ const ProjectsView = ({ projects = [] }) => {
         {projects.map((project, i) => (
           <motion.div
             key={project._id || i}
-            className="bg-white/5 backdrop-blur-lg rounded-3xl border border-white/10 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 text-white min-h-[420px]"
+            className="bg-white/5 backdrop-blur-lg rounded-3xl border border-white/10 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 text-white min-h-[420px] flex flex-col"
             whileHover={{ scale: 1.03, y: -8 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
           >
@@ -25,12 +25,12 @@ const ProjectsView = ({ projects = [] }) => {
                 />
               </div>
             )}
-            <div className="p-8">
+            <div className="p-8 flex flex-col flex-grow">
               <h3 className="font-bold text-xl mb-3 text-white">{project.title}</h3>
               <p className="text-gray-300 whitespace-pre-line line-clamp-4 mb-5 leading-relaxed">
                 {project.description}
               </p>
-              
+
               {project.techStack?.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-6">
                   {project.techStack.map((tech, index) => (
@@ -43,8 +43,8 @@ const ProjectsView = ({ projects = [] }) => {
                   ))}
                 </div>
               )}
-              
-              <div className="flex space-x-6 mt-auto pt-4 border-t border-white/10">
+
+              <div className="flex flex-wrap gap-4 mt-auto pt-4 border-t border-white/10">
                 {project.githubLink && (
                   <a
                     href={project.githubLink}
@@ -69,6 +69,12 @@ const ProjectsView = ({ projects = [] }) => {
                     <span className="text-sm font-medium">Demo</span>
                   </a>
                 )}
+                <button
+                  onClick={() => onViewDetails?.(project)}
+                  className="ml-auto px-4 py-1.5 rounded-lg text-sm font-medium border border-blue-400/30 text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 transition-colors"
+                >
+                  View Details
+                </button>
               </div>
             </div>
           </motion.div>

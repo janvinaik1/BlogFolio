@@ -7,6 +7,7 @@ import BasicInfoView from "../components/view_portfolio/BasicInfo";
 import ContactAndSocialView from "../components/view_portfolio/ContactInfo";
 import SkillsView from "../components/view_portfolio/Skills";
 import ProjectsView from "../components/view_portfolio/Project";
+import ProjectModal from "../components/view_portfolio/ProjectModal";
 import EducationView from "../components/view_portfolio/Education";
 import ExperienceView from "../components/view_portfolio/Expericence";
 import BlogLinkView from "../components/view_portfolio/Blog";
@@ -17,6 +18,9 @@ const ViewPortfolio = () => {
   const [error, setError] = useState(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+
+  // NEW: to handle the modal
+  const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     const fetchPortfolio = async () => {
@@ -98,7 +102,11 @@ const ViewPortfolio = () => {
         </motion.section>
 
         <motion.section id="projects" onHoverStart={() => setIsHovering(true)} onHoverEnd={() => setIsHovering(false)}>
-          <ProjectsView projects={portfolio.projects} />
+          {/* PASS onViewDetails to open modal */}
+          <ProjectsView 
+            projects={portfolio.projects}
+            onViewDetails={(project) => setSelectedProject(project)}
+          />
         </motion.section>
 
         <motion.section id="education" onHoverStart={() => setIsHovering(true)} onHoverEnd={() => setIsHovering(false)}>
@@ -115,6 +123,10 @@ const ViewPortfolio = () => {
           <ContactAndSocialView contact={portfolio.contact} socialLinks={portfolio.socialLinks} />
         </motion.section>
       </div>
+      <ProjectModal 
+        project={selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
     </section>
   );
 };
