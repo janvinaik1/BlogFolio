@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import blogService from "../services/blog.services";
 import MDEditor from "@uiw/react-md-editor";
-import { Helmet } from "react-helmet-async";
 
 const BlogDetailPage = () => {
   const { id } = useParams();
@@ -167,25 +166,6 @@ const BlogDetailPage = () => {
       </div>
     );
   }
-  <Helmet>
-    <title>{blog.title} | My Developer Blog</title>
-    <meta name="description" content={`${blog.content.slice(0, 150)}...`} />
-    <meta property="og:title" content={blog.title} />
-    <meta
-      property="og:description"
-      content={`${blog.content.slice(0, 150)}...`}
-    />
-    <meta
-      property="og:image"
-      content={blog.coverImage }
-    />
-    <meta property="og:type" content="article" />
-    <meta
-      property="og:url"
-      content={`https://personal-blog-portfolio-frontend.vercel.app/blog/home?authorId=${blog._id}`}
-    />
-    <link rel="canonical" href={`https://personal-blog-portfolio-frontend.vercel.app/blog/home?authorId=${blog._id}`} />
-  </Helmet>;
 
   return (
     <div className="min-h-screen bg-white">
