@@ -7,7 +7,6 @@ import {
   FaGlobe,
 } from "react-icons/fa";
 
-
 const getIconForPlatform = (url = "") => {
   const domain = url.toLowerCase();
   if (domain.includes("github.com")) return <FaGithub />;
@@ -69,7 +68,6 @@ const Avatar = ({ src, alt }) => {
   );
 };
 
-
 // Animated Name
 const AnimatedName = ({ name = "" }) => (
   <span className="text-purple-400 inline-block">
@@ -116,8 +114,7 @@ const SocialLinks = ({ socialLinks = [] }) => (
 
 // Action Buttons
 const ActionButtons = ({ portfolio, scrollToContact }) => {
-  const blogLink = `https://personal-blog-portfolio-frontend.vercel.app/public/home?authorId=${portfolio?.user?._id}`;
-
+  const blogLink = `${window.location.origin}/public/home?authorId=${portfolio?.user?._id}`;
   return (
     <motion.div
       className="flex flex-wrap gap-3 sm:gap-4 justify-center md:justify-start"
@@ -207,10 +204,14 @@ const BasicInfoView = ({ portfolio = {} }) => {
           >
             {portfolio.bio}
           </motion.p>
-          {Array.isArray(portfolio.socialLinks) && portfolio.socialLinks.length > 0 && (
-            <SocialLinks socialLinks={portfolio.socialLinks} />
-          )}
-          <ActionButtons portfolio={portfolio} scrollToContact={scrollToContact} />
+          {Array.isArray(portfolio.socialLinks) &&
+            portfolio.socialLinks.length > 0 && (
+              <SocialLinks socialLinks={portfolio.socialLinks} />
+            )}
+          <ActionButtons
+            portfolio={portfolio}
+            scrollToContact={scrollToContact}
+          />
         </div>
       </motion.div>
       <ScrollIndicator />
